@@ -26,5 +26,8 @@ public class thelow_quest_helper {
         MinecraftForge.EVENT_BUS.register(new APIListener());
         MinecraftForge.EVENT_BUS.register(new TitleInterceptor());
         ClientCommandHandler.instance.registerCommand(new quest_helper_cmd());
+
+        MinecraftForge.EVENT_BUS.register(new com.thelow_quest_helper.thelow_quest_helper.item.BeaconBeamDrawer());
+        MinecraftForge.EVENT_BUS.register(new com.thelow_quest_helper.thelow_quest_helper.item.NextLocationBeacon());
     }
 }
