@@ -13,7 +13,7 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 
-@Mod(modid = "thelow_quest_helper", version = "1.0")
+@Mod(modid = "thelow_quest_helper", version = "1.1")
 public class thelow_quest_helper {
 	public static boolean enable = true;
 
@@ -26,8 +26,5 @@ public class thelow_quest_helper {
         MinecraftForge.EVENT_BUS.register(new APIListener());
         MinecraftForge.EVENT_BUS.register(new TitleInterceptor());
         ClientCommandHandler.instance.registerCommand(new quest_helper_cmd());
-
-        MinecraftForge.EVENT_BUS.register(new com.thelow_quest_helper.thelow_quest_helper.item.BeaconBeamDrawer());
-        MinecraftForge.EVENT_BUS.register(new com.thelow_quest_helper.thelow_quest_helper.item.NextLocationBeacon());
     }
 }
