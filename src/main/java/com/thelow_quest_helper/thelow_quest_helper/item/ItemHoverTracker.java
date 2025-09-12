@@ -26,7 +26,7 @@ public class ItemHoverTracker {
         ItemStack stack = event.itemStack;
         Item item = stack.getItem();
         String id = Item.itemRegistry.getNameForObject(item).toString();
-        if(id==null||!id.equals("minecraft:book")&&!id.equals("minecraft:written_book")&&!id.equals("minecraft:wool")&&!id.equals("minecraft:paper")&&!id.equals("minecraft:writable_book"))return;
+        if(id==null||(!id.equals("minecraft:book")&&!id.equals("minecraft:written_book")&&!id.equals("minecraft:wool")&&!id.equals("minecraft:paper")&&!id.equals("minecraft:writable_book")&&!id.equals("minecraft:coal_block")&&!id.equals("minecraft:gold_block")&&!id.equals("minecraft:diamond_block")&&!id.equals("minecraft:glowstone")&&!id.equals("minecraft:emerald_block")))return;
 
         if (stack != null && stack.hasTagCompound()) {
             List<String> tooltip = event.toolTip;
@@ -86,10 +86,11 @@ public class ItemHoverTracker {
     					tooltip.add("§7" + text1.replace("\n", ""));
     				}
     				tooltip.add("§a[W]キーでマーカーを設置できます");
+    				tooltip.add("§a[Z]キーでルート案内を開始します");
     			}
             }
             
-            if(id.equals("minecraft:book")||id.equals("minecraft:written_book")||id.equals("minecraft:writable_book")) {
+            if((id.equals("minecraft:book")||id.equals("minecraft:written_book")||id.equals("minecraft:writable_book")||id.equals("minecraft:coal_block")||id.equals("minecraft:gold_block")||id.equals("minecraft:diamond_block")||id.equals("minecraft:glowstone")||id.equals("minecraft:emerald_block"))) {
             	
             	//もし地上世界の座標が表示されているならそこにマーカーを設置する
             	for (String line : lore) {
@@ -104,10 +105,12 @@ public class ItemHoverTracker {
                 				lastNPCname = clean.split(" : ")[0];
                 			}
                             tooltip.add("§a[W]キーでマーカーを設置できます");
+                            tooltip.add("§a[Z]キーでルート案内を開始します");
                             break;
                         }
             		}
-            		if(clean.contains("攻略する")) {
+            		if((clean.contains("攻略する")||(clean.contains("クリア")&&!clean.contains("クリア条件")))) {
+            			if(!clean.contains("を"))return;
             			String dungeonName = clean.split("を")[0];
                     	Dungeon d = Dungeon.getDungeonByName(dungeonName);
                     	if(d==null||d.x==null||d.y==null||d.z==null)return;
@@ -118,6 +121,8 @@ public class ItemHoverTracker {
         					tooltip.add("§7" + text1.replace("\n",""));
         				}
         				tooltip.add("§a[W]キーでマーカーを設置できます");
+        				tooltip.add("§a[Z]キーでルート案内を開始します");
+        				break;
             		}
                 }
             }
