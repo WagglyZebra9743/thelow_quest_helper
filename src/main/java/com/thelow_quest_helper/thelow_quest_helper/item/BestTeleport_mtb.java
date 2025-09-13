@@ -99,12 +99,12 @@ public class BestTeleport_mtb {
         addTeleportPoint(groupFuneB, "フェルトン(船B)", 1075, 68, 769);
         addTeleportPoint(groupFuneB, "ヴェネミア", -127, 69, 897);
         addTeleportPoint(groupFuneB, "ベルフォート", -968, 68, 815);
-        addTeleportPoint(groupFuneB, "パンプニー(船B)", -891, 68, 1163);
+        addTeleportPoint(groupFuneB, "ハンプニー(船B)", -891, 68, 1163);
 
         String groupHikuutei = "飛空艇";
         addTeleportPoint(groupHikuutei, "ビルニス", -150, 185, 1291);
         addTeleportPoint(groupHikuutei, "メリアル城塞", 1319, 127, -929);
-        addTeleportPoint(groupHikuutei, "パンプニー(飛空艇)", -938, 103, 1143);
+        addTeleportPoint(groupHikuutei, "ハンプニー(飛空艇)", -938, 103, 1143);
         addTeleportPoint(groupHikuutei, "ハルシオン(飛空艇)", -1131, 129, -792);
         addTeleportPoint(groupHikuutei, "ヴェネミア(飛空艇)", -37, 129, 910);
         addTeleportPoint(groupHikuutei, "メルトリア王国 (飛空艇)", -384, 102, -1263);

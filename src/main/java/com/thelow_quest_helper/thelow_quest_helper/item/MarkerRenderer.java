@@ -7,10 +7,13 @@ import javax.vecmath.Vector3d;
 
 import org.lwjgl.opengl.GL11;
 
+import com.thelow_quest_helper.thelow_quest_helper.chat.APIListener;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.entity.RenderManager;
+import net.minecraft.util.BlockPos;
 import net.minecraft.util.ChatComponentText;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -59,6 +62,16 @@ public class MarkerRenderer {
     	    	}
     	    }
     	    current_enable = marker_enable; // 状態を更新
+    	}
+    	
+    	if(!marker_enable&&APIListener.gasya) {
+    		BlockPos blockpos = Keyclick.getPlayerBlockPos();
+    		int x1 = blockpos.getX(),y1=blockpos.getY(),z1=blockpos.getX();
+    		if(x1==-1253&&y1==85&&z1==-973){
+    			mc.thePlayer.sendChatMessage("/thelow_api location");
+    			System.out.println("gacha to thelow");
+    			APIListener.gasya = false;
+    		}
     	}
     	
     	//マーカーが無効なら表示しない

@@ -20,7 +20,8 @@ public class APIListener {
     public static boolean tickenable = false;
     public static boolean isClantp = true;
     private static int TickTimer = 0;
-    private static final int INTERVAL = 200;
+    private static int INTERVAL = 200;
+    public static boolean gasya=false;
     
     private static final Minecraft mc = Minecraft.getMinecraft();
 
@@ -41,8 +42,11 @@ public class APIListener {
                         String worldName = response.get("worldName").getAsString();
                         if(worldName.equals("thelow")) {
                         	MarkerRenderer.marker_enable = true;
+                        	gasya=false;
                         }else {
-                        	MarkerRenderer.marker_enable = false;
+                        	if(!gasya) {
+                        		MarkerRenderer.marker_enable = false;
+                        	}
                         }
                     }
                     if("player_status".equals(apiType)) {
@@ -81,6 +85,10 @@ public class APIListener {
         //tpでダンジョンから出た想定
         if(message.contains("テレポートしました")) {
         	mc.thePlayer.sendChatMessage("/thelow_api location");
+        }
+        
+        if(message.contains("ここに置くガチャは増えていくかもしれません。")) {
+        	gasya=true;
         }
         
         if (message.startsWith("$api")) {

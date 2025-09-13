@@ -28,6 +28,10 @@ class Dungeon {
         }
         return null; // 該当なし
     }
+    
+    private static double[] thank = {522.0,70.0,-678.0};
+    
+    
     private static final List<Dungeon> dungeons = Arrays.asList(
     		new Dungeon("知識の水路", -53.0, 114.0, 6.0),
     		new Dungeon("エルドール・フード・グラウンド", 80.0, 116.0, 50.0),
@@ -38,8 +42,8 @@ class Dungeon {
     		new Dungeon("精錬所の地下", -9.0, 111.0, -50.0),
     		new Dungeon("サラビサの地下道", 9.0, 116.0, -26.0),
     		new Dungeon("技能の水路", -37.0, 114.0, 24.0),
-    		new Dungeon("Forssa", 799.0, 74.0, -218.0),
-    		new Dungeon("Forssa迷いの森", 799.0, 74.0, -218.0),
+    		new Dungeon("Forssa", -126.0, 160.0, 164.0),
+    		new Dungeon("Forssa迷いの森", -126.0, 160.0, 164.0),
     		new Dungeon("エルドール鉱山", 118.0, 112.0, -27.0),
     		new Dungeon("スワロー洞窟", -404.0, 136.0, 121.0),
     		new Dungeon("始まりの遺跡", 91.0, 128.0, 191.0),
@@ -63,6 +67,7 @@ class Dungeon {
     		new Dungeon("XmasCastle", -124.0, 170.0, 28.0),
     		new Dungeon("キング広場", -124.0, 170.0, 28.0),
     		new Dungeon("奈落アスレポルボー", 61.0, 64.0, -512.0),
+    		new Dungeon("ポルポAnother route", 61.0, 64.0, -512.0),
     		new Dungeon("Deep woods", 516.0, 101.0, 376.0),
     		new Dungeon("エルドールの不思議な林", 57.0, 118.0, -122.0),
     		new Dungeon("ロンゴノット", 556.0, 86.0, 95.0),
@@ -251,12 +256,12 @@ class Dungeon {
     		new Dungeon("純白の宮殿 -Hard-", 1156.0, 80.0, -932.0),
     		new Dungeon("純白の宮殿 -Easy-", 1156.0, 80.0, -932.0),
     		new Dungeon("純黒の宮殿", 1156.0, 80.0, -932.0),
-    		new Dungeon("サンクチュアリー:風の記憶", 747.0, 21.0, -495.0),
-    		new Dungeon("サンクチュアリー:水の記憶", 747.0, 21.0, -495.0),
-    		new Dungeon("サンクチュアリー:大地の記憶", 747.0, 21.0, -495.0),
-    		new Dungeon("サンクチュアリー:火の記憶", 747.0, 21.0, -495.0),
-    		new Dungeon("サンクチュアリー:森の記憶", 747.0, 21.0, -495.0),
-    		new Dungeon("サンクチュアリー：終わりと始まり", 747.0, 21.0, -495.0),
+    		new Dungeon("サンクチュアリー:風の記憶", thank[0], thank[1], thank[2]),
+    		new Dungeon("サンクチュアリー:水の記憶", thank[0], thank[1], thank[2]),
+    		new Dungeon("サンクチュアリー:大地の記憶", thank[0], thank[1], thank[2]),
+    		new Dungeon("サンクチュアリー:火の記憶", thank[0], thank[1], thank[2]),
+    		new Dungeon("サンクチュアリー:森の記憶", thank[0], thank[1], thank[2]),
+    		new Dungeon("サンクチュアリー：終わりと始まり", thank[0], thank[1], thank[2]),
     		new Dungeon("魔界:醜悪ノ淵叢",  null,  null,  null),
     		new Dungeon("魔界：マクアの深淵", 944.0, 91.0, -500.0),
     		new Dungeon("呪界",  null,  null,  null),
