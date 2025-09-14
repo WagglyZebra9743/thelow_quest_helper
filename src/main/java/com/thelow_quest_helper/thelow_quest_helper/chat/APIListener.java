@@ -22,6 +22,8 @@ public class APIListener {
     private static int TickTimer = 0;
     private static int INTERVAL = 200;
     public static boolean gasya=false;
+    public static boolean can_cmd_send = true;
+    private static int cmd_ct = 0;
     
     private static final Minecraft mc = Minecraft.getMinecraft();
 
@@ -79,12 +81,14 @@ public class APIListener {
         
         //killとかで死んでダンジョンから出た想定
         String mcid = mc.thePlayer.getName();
-        if(message.contains(mcid)) {
+        if(message.contains(mcid)&&MarkerRenderer.IsThereMarker()&&APIListener.can_cmd_send) {
         	mc.thePlayer.sendChatMessage("/thelow_api location");
+        	can_cmd_send = false;
         }
         //tpでダンジョンから出た想定
-        if(message.contains("テレポートしました")) {
+        if(message.contains("テレポートしました")&&MarkerRenderer.IsThereMarker()&&APIListener.can_cmd_send) {
         	mc.thePlayer.sendChatMessage("/thelow_api location");
+        	can_cmd_send=false;
         }
         
         if(message.contains("ここに置くガチャは増えていくかもしれません。")) {
@@ -101,6 +105,7 @@ public class APIListener {
         if (event.phase == TickEvent.Phase.START)return;//TickEventはSTARTとENDの2回発火するので1回にする
         if(!MarkerRenderer.IsThereMarker()) {
         	TickTimer = 0;
+        	cmd_ct=0;
         	return;//マーカーが無いなら処理しない
         }
         TickTimer++;//1ずつ加算
@@ -121,6 +126,14 @@ public class APIListener {
                 mc.thePlayer.sendChatMessage("/thelow_api player");
             }
         }
+        if(!can_cmd_send) {
+        	cmd_ct++;
+        	if(cmd_ct%200==0) {
+        		can_cmd_send=true;
+        		cmd_ct=0;
+        	}
+        }
+        System.out.println(can_cmd_send+"/"+cmd_ct);
     }
 
 

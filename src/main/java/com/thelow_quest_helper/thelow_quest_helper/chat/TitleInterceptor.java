@@ -2,6 +2,8 @@ package com.thelow_quest_helper.thelow_quest_helper.chat;
 
 import java.lang.reflect.Field;
 
+import com.thelow_quest_helper.thelow_quest_helper.item.MarkerRenderer;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiIngame;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
@@ -31,8 +33,9 @@ public class TitleInterceptor {
         if (titleField != null) {
             try {
                 String title = (String) titleField.get(mc.ingameGUI);
-                if (title != null && !title.isEmpty() && !lasttitle.contains(title)) {
+                if (title != null && !title.isEmpty() && !lasttitle.contains(title)&&MarkerRenderer.IsThereMarker()&&APIListener.can_cmd_send) {
                 	mc.thePlayer.sendChatMessage("/thelow_api location");
+                	APIListener.can_cmd_send=false;
                     lasttitle = title;
                 }
             } catch (Exception e) {

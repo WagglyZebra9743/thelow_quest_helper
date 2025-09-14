@@ -13,7 +13,7 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 
-@Mod(modid = "thelow_quest_helper", version = "1.1")
+@Mod(modid = "thelow_quest_helper", version = "1.2")
 public class thelow_quest_helper {
 	public static boolean enable = true;
 

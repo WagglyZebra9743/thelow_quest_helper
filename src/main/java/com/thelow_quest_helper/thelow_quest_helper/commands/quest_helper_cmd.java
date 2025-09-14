@@ -3,6 +3,7 @@ package com.thelow_quest_helper.thelow_quest_helper.commands;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.thelow_quest_helper.thelow_quest_helper.chat.APIListener;
 import com.thelow_quest_helper.thelow_quest_helper.item.MarkerRenderer;
 
 import net.minecraft.client.Minecraft;
@@ -49,6 +50,7 @@ public class quest_helper_cmd extends CommandBase {
         	case "reload":{
         		mc.thePlayer.sendChatMessage("/thelow_api location");
         		sendmsg("§a[thelow_quest_helper]§7APIコマンドを送信しました" , sender);
+        		APIListener.can_cmd_send=false;
         		break;
         	}
         	
