@@ -64,13 +64,25 @@ public class MarkerRenderer {
     	    current_enable = marker_enable; // 状態を更新
     	}
     	
-    	if(!marker_enable&&APIListener.gasya) {
+    	if(!marker_enable&&APIListener.gasya&&APIListener.can_cmd_send) {
     		BlockPos blockpos = Keyclick.getPlayerBlockPos();
-    		int x1 = blockpos.getX(),y1=blockpos.getY(),z1=blockpos.getX();
+    		int x1 = blockpos.getX(),y1=blockpos.getY(),z1=blockpos.getZ();
     		if(x1==-1253&&y1==85&&z1==-973){
     			mc.thePlayer.sendChatMessage("/thelow_api location");
     			System.out.println("gacha to thelow");
     			APIListener.gasya = false;
+    			APIListener.can_cmd_send=false;
+    		}
+    	}
+    	
+    	//飛空艇の移動先座標でリセット
+    	if(!marker_enable&&APIListener.can_cmd_send) {
+    		BlockPos blockpos = Keyclick.getPlayerBlockPos();
+    		int x1 = blockpos.getX(),y1=blockpos.getY(),z1=blockpos.getZ();
+    		if((x1==-150&&y1==184&&z1==1293)||(x1==1319&&y1==127&&z1==-929)||(x1==-935&&y1==102&&z1==1142)||(x1==-1127&&y1==128&&z1==-794)||(x1==-37&&y1==128&&z1==909)||(x1==-382&&y1==101&&z1==-1265)||(x1==-463&&y1==152&&z1==-608)){
+    			mc.thePlayer.sendChatMessage("/thelow_api location");
+    			System.out.println("airship to thelow");
+    			APIListener.can_cmd_send=false;
     		}
     	}
     	

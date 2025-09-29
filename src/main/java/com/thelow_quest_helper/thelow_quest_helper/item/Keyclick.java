@@ -9,6 +9,7 @@ import org.lwjgl.input.Keyboard;
 import com.thelow_quest_helper.thelow_quest_helper.chat.APIListener;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.BlockPos;
@@ -60,11 +61,11 @@ public class Keyclick {
                         //マーカーをリセットした後に目的地マーカーを設置する
                         MarkerRenderer.clearMarkers();
                         MarkerRenderer.addMarker(x,y,z, questname+"\\n"+NPCname);
-                        mc.thePlayer.addChatMessage(new ChatComponentText("§a[thelow_quest_helper]§7マーカーを設置しました§e("+x+","+y+","+z+")"));
+                        sendchat("§a[thelow_quest_helper]§7マーカーを設置しました§e("+x+","+y+","+z+")", mc.thePlayer);
                         
                         //最寄りの町の情報を取得して表示する
                         String info = Town.getNearestTownInfo(x, y, z);
-                        mc.thePlayer.addChatMessage(new ChatComponentText(info));
+                        sendchat(info,mc.thePlayer);
                         
                         //キーを押した判定を取り説明文をリセットしておく(ループ防止)
                         wkeyClicked = true;
@@ -84,14 +85,14 @@ public class Keyclick {
     				MarkerRenderer.clearMarkers();
     				MarkerRenderer.addMarker(d.x,d.y,d.z,d.name);
     				
-    				mc.thePlayer.addChatMessage(new ChatComponentText("§a[thelow_quest_helper]§7マーカーを設置しました§e("+d.x+","+d.y+","+d.z+")"));
+    				sendchat("§a[thelow_quest_helper]§7マーカーを設置しました§e("+d.x+","+d.y+","+d.z+")",mc.thePlayer);
     				
     				//目的地に接近したときのメッセージを出すために保存
     				goalname = d.name;
     				
     				//最寄りの町の情報を取得して表示する
     				String info = Town.getNearestTownInfo(d.x, d.y, d.z);
-    				mc.thePlayer.addChatMessage(new ChatComponentText(info));
+    				sendchat(info,mc.thePlayer);
     				
     				//キーを押した判定を取り説明文をリセットしておく(ループ防止)
     				wkeyClicked = true;
@@ -112,11 +113,11 @@ public class Keyclick {
                 	//マーカーをリセットした後に目的地マーカーを設置する
     				MarkerRenderer.clearMarkers();
     				MarkerRenderer.addMarker(d.x,d.y,d.z,d.name);
-    				mc.thePlayer.addChatMessage(new ChatComponentText("§a[thelow_quest_helper]§7マーカーを設置しました§e("+d.x+","+d.y+","+d.z+")"));
+    				sendchat("§a[thelow_quest_helper]§7マーカーを設置しました§e("+d.x+","+d.y+","+d.z+")",mc.thePlayer);
     				
     				//最寄りの町の情報を取得して表示する
     				String info = Town.getNearestTownInfo(d.x, d.y, d.z);
-    				mc.thePlayer.addChatMessage(new ChatComponentText(info));
+    				sendchat(info,mc.thePlayer);
     				
     				//目的地に接近したときのメッセージを出すために保存
     				goalname = d.name;
@@ -163,15 +164,15 @@ public class Keyclick {
                         routeInfo = routeCalculator.getBestRoute(x1, y1, z1, x, y, z, APIListener.isClantp);
                         
                         //目的地へのルート案内開始と予定ルートを表示
-                        mc.thePlayer.addChatMessage(new ChatComponentText("§a[thelow_quest_helper]§f"+goalname+"§7へのルート案内を開始します"));
-                        mc.thePlayer.addChatMessage(new ChatComponentText("§e予定ルート:§a現在地" + routeInfo[3]));
-                        mc.thePlayer.addChatMessage(new ChatComponentText(""));
+                        sendchat("§a[thelow_quest_helper]§f"+goalname+"§7へのルート案内を開始します",mc.thePlayer);
+                        sendchat("§e予定ルート:§a現在地" + routeInfo[3],mc.thePlayer);
+                        sendchat("",mc.thePlayer);
                         
                         //最初の経由地がクランハウスだけか、ガチャ広場経由か、直接かによって分岐するメッセージ
                         if(routeInfo[3].contains("clan")) {
-                        	mc.thePlayer.addChatMessage(new ChatComponentText("§a[thelow_quest_helper]§bクランtp§7をし"+(routeInfo[3].contains("ガチャ") ? "た後§bガチャ広場§7を経由して§aハルシオン§7に向かってください" : "て"+ (routeInfo[3].contains("メルトリア王国 (馬車)") ? "§a馬車乗り場§7に向かってください" : routeInfo[3].contains("メルトリア王国 (飛空艇)") ? "§a飛空艇発着場§7に向かってください" : "§f"+goalname+"§7に向かってください"))));
+                        	sendchat("§a[thelow_quest_helper]§bクランtp§7をし"+(routeInfo[3].contains("ガチャ") ? "た後§bガチャ広場§7を経由して§aハルシオン§7に向かってください" : "て"+ (routeInfo[3].contains("メルトリア王国 (馬車)") ? "§a馬車乗り場§7に向かってください" : routeInfo[3].contains("メルトリア王国 (飛空艇)") ? "§a飛空艇発着場§7に向かってください" : "§f"+goalname+"§7に向かってください")), mc.thePlayer);
                         }else {
-                        	mc.thePlayer.addChatMessage(new ChatComponentText("§a[thelow_quest_helper]§a"+MarkerRenderer.getMarkername()+"に向かってください"));
+                        	sendchat("§a[thelow_quest_helper]§e"+MarkerRenderer.getMarkername()+"に向かってください",mc.thePlayer);
                         }
                         
                         //キーを押した判定を取り説明文路リセットしておく(ループ防止)
@@ -196,15 +197,15 @@ public class Keyclick {
     				routeInfo = routeCalculator.getBestRoute(x1, y1, z1, (int)Math.round(d.x), (int)Math.round(d.y), (int)Math.round(d.z), APIListener.isClantp);
 
     				//目的地へのルート案内開始と予定ルートを表示
-    				mc.thePlayer.addChatMessage(new ChatComponentText("§a[thelow_quest_helper]§f"+goalname+"§7へのルート案内を開始します"));
-                    mc.thePlayer.addChatMessage(new ChatComponentText("§e予定ルート:§a現在地" + routeInfo[3]));
-                    mc.thePlayer.addChatMessage(new ChatComponentText(""));
+    				sendchat("§a[thelow_quest_helper]§f"+goalname+"§7へのルート案内を開始します",mc.thePlayer);
+    				sendchat("§e予定ルート:§a現在地" + routeInfo[3],mc.thePlayer);
+    				sendchat("",mc.thePlayer);
                     
                     //最初の経由地がクランハウスだけか、ガチャ広場経由か、直接かによって分岐するメッセージ
                     if(routeInfo[3].contains("clan")) {
-                    	mc.thePlayer.addChatMessage(new ChatComponentText("§a[thelow_quest_helper]§bクランtp§7をし"+(routeInfo[3].contains("ガチャ") ? "た後§bガチャ広場§7を経由して§aハルシオン§7に向かってください" : "て"+ (routeInfo[3].contains("メルトリア王国 (馬車)") ? "§a馬車乗り場§7に向かってください" : routeInfo[3].contains("メルトリア王国 (飛空艇)") ? "§a飛空艇発着場§7に向かってください" : "§f"+goalname+"§7に向かってください"))));
+                    	sendchat("§a[thelow_quest_helper]§bクランtp§7をし"+(routeInfo[3].contains("ガチャ") ? "た後§bガチャ広場§7を経由して§aハルシオン§7に向かってください" : "て"+ (routeInfo[3].contains("メルトリア王国 (馬車)") ? "§a馬車乗り場§7に向かってください" : routeInfo[3].contains("メルトリア王国 (飛空艇)") ? "§a飛空艇発着場§7に向かってください" : "§f"+goalname+"§7に向かってください")),mc.thePlayer);
                     }else {
-                    	mc.thePlayer.addChatMessage(new ChatComponentText("§a[thelow_quest_helper]§a"+MarkerRenderer.getMarkername()+"に向かってください"));
+                    	sendchat("§a[thelow_quest_helper]§e"+MarkerRenderer.getMarkername()+"§aに向かってください",mc.thePlayer);
                     }
                     
                     //キーを押した判定を取り説明文をリセットしておく(ループ防止)
@@ -231,15 +232,15 @@ public class Keyclick {
     				routeInfo = routeCalculator.getBestRoute(x1, y1, z1, (int)Math.round(d.x), (int)Math.round(d.y), (int)Math.round(d.z), APIListener.isClantp);
     				
     				//目的地へのルート案内開始と予定ルートを表示
-    				mc.thePlayer.addChatMessage(new ChatComponentText("§a[thelow_quest_helper]§f"+goalname+"§7へのルート案内を開始します"));
-                    mc.thePlayer.addChatMessage(new ChatComponentText("§e予定ルート:§a現在地" + routeInfo[3]));
-                    mc.thePlayer.addChatMessage(new ChatComponentText(""));
+    				sendchat("§a[thelow_quest_helper]§f"+goalname+"§7へのルート案内を開始します",mc.thePlayer);
+    				sendchat("§e予定ルート:§a現在地" + routeInfo[3],mc.thePlayer);
+    				sendchat("",mc.thePlayer);
                     
                     //最初の経由地がクランハウスだけか、ガチャ広場経由か、直接かによって分岐するメッセージ
                     if(routeInfo[3].contains("clan")) {
-                    	mc.thePlayer.addChatMessage(new ChatComponentText("§a[thelow_quest_helper]§bクランtp§7をし"+(routeInfo[3].contains("ガチャ") ? "た後§bガチャ広場§7を経由して§aハルシオン§7に向かってください" : "て"+ (routeInfo[3].contains("メルトリア王国 (馬車)") ? "§a馬車乗り場§7に向かってください" : routeInfo[3].contains("メルトリア王国 (飛空艇)") ? "§a飛空艇発着場§7に向かってください" : "§f"+goalname+"§7に向かってください"))));
+                    	sendchat("§a[thelow_quest_helper]§bクランtp§7をし"+(routeInfo[3].contains("ガチャ") ? "た後§bガチャ広場§7を経由して§aハルシオン§7に向かってください" : "て"+ (routeInfo[3].contains("メルトリア王国 (馬車)") ? "§a馬車乗り場§7に向かってください" : routeInfo[3].contains("メルトリア王国 (飛空艇)") ? "§a飛空艇発着場§7に向かってください" : "§f"+goalname+"§7に向かってください")),mc.thePlayer);
                     }else {
-                    	mc.thePlayer.addChatMessage(new ChatComponentText("§a[thelow_quest_helper]§a"+MarkerRenderer.getMarkername()+"に向かってください"));
+                    	sendchat("§a[thelow_quest_helper]§e"+MarkerRenderer.getMarkername()+"§aに向かってください",mc.thePlayer);
                     }
                     
                     //キーを押した判定を取り説明文をリセットしておく(ループ防止)
@@ -263,5 +264,10 @@ public class Keyclick {
             return player.getPosition();
         }
         return null;
+    }
+    
+    private static void sendchat(String text,EntityPlayerSP thePlayer) {
+    	Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(text));
+    	
     }
 }

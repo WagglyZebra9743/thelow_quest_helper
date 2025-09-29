@@ -112,8 +112,11 @@ public class ItemHoverTracker {
             		if((clean.contains("攻略する")||(clean.contains("クリア")&&!clean.contains("クリア条件")))) {
             			if(!clean.contains("を"))return;
             			String dungeonName = clean.split("を")[0];
-                    	Dungeon d = Dungeon.getDungeonByName(dungeonName);
-                    	if(d==null||d.x==null||d.y==null||d.z==null)return;
+            			Dungeon d = Dungeon.getDungeonByName(dungeonName);
+                    	if(d==null||d.x==null||d.y==null||d.z==null) {
+                    		System.out.println("d is null");
+                    		return;
+                    	}
         				String info = Town.getNearestTownInfo(d.x, d.y, d.z);
         				if(info==null)return;
         				String[] texts = info.split("\\\\n");

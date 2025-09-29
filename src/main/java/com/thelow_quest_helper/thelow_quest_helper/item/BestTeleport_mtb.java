@@ -18,7 +18,7 @@ public class BestTeleport_mtb {
 
 		
 	// Matatabi から移植した最良テレポート手段を返すクラス
-    private static class TeleportPoint {
+    public static class TeleportPoint {
         String name;
         int x, y, z;
         String groupName;
@@ -97,7 +97,7 @@ public class BestTeleport_mtb {
 
         String groupFuneB = "船B";
         addTeleportPoint(groupFuneB, "フェルトン(船B)", 1075, 68, 769);
-        addTeleportPoint(groupFuneB, "ヴェネミア", -127, 69, 897);
+        addTeleportPoint(groupFuneB, "ヴェネミア(船B)", -127, 69, 897);
         addTeleportPoint(groupFuneB, "ベルフォート", -968, 68, 815);
         addTeleportPoint(groupFuneB, "ハンプニー(船B)", -891, 68, 1163);
 
@@ -119,7 +119,7 @@ public class BestTeleport_mtb {
     }
 
     //三次元座標間の距離を測定
-    private double calculateDistance(int x1, int y1, int z1, int x2, int y2, int z2) {
+    private static double calculateDistance(int x1, int y1, int z1, int x2, int y2, int z2) {
         return Math.sqrt(Math.pow(x1 - x2, 2) + Math.pow(y1 - y2, 2) + Math.pow(z1 - z2, 2));
     }
 
@@ -169,7 +169,7 @@ public class BestTeleport_mtb {
 
     //特に大きく変更はしていない
     //移動経路にカラーコードを追加した程度
-private RouteResult findShortestPathUsingDijkstra(int startX, int startY, int startZ, int endX, int endY, int endZ, String goalName) {
+private static RouteResult findShortestPathUsingDijkstra(int startX, int startY, int startZ, int endX, int endY, int endZ, String goalName) {
      TeleportPoint startNode = new TeleportPoint(START_NODE_NAME_PREFIX + UUID.randomUUID(), startX, startY, startZ, null);
      TeleportPoint endNode = new TeleportPoint(END_NODE_NAME_PREFIX + UUID.randomUUID(), endX, endY, endZ, null);
      String endNodeCoordStr = endNode.getCoordinatesString();
@@ -389,4 +389,33 @@ private RouteResult findShortestPathUsingDijkstra(int startX, int startY, int st
 	        totalDistanceStr
 	    };
 	}
+ 	public static TeleportPoint findNearestBoatB(int currentX, int currentY, int currentZ) {
+     // 1. "船B" グループに属するテレポート地点をすべて取得します
+     final String GROUP_FUNE_B = "船B";
+     List<TeleportPoint> boatBDestinations = TELEPORT_GROUPS.get(GROUP_FUNE_B);
+
+     if (boatBDestinations == null || boatBDestinations.isEmpty()) {
+         // 船Bの乗り場が定義されていない場合はnullを返します
+         return null;
+     }
+     TeleportPoint nearestBoatBPoint = new TeleportPoint("ハンプニー(船B)",-891,68,1163,"船B");//最も近い位置を格納する変数
+     double mindistance = findShortestPathUsingDijkstra(-188,59,-1159,-891,68,1163,"ハンプニー(船B)").totalDistance;//最短距離(ガシャ広場、ハンプニー)
+     int minfullPathsize = findShortestPathUsingDijkstra(-188,59,-1159,-891,68,1163,"ハンプニー(船B)").fullPath.size();
+     for (TeleportPoint boatBpoint : boatBDestinations) {
+    	 int boteBpointx = boatBpoint.x, boteBpointy = boatBpoint.y,boteBpointz = boatBpoint.z;
+    	 RouteResult result = findShortestPathUsingDijkstra(currentX,currentY,currentZ,boteBpointx,boteBpointy,boteBpointz,boatBpoint.name);
+    	 if(result.totalDistance<mindistance) {
+    		 if(result.totalDistance==mindistance&&result.fullPath.size()<minfullPathsize) {
+    			 nearestBoatBPoint = boatBpoint;
+    			 minfullPathsize = result.fullPath.size();
+    			 mindistance = result.totalDistance;
+    			 continue;
+    		 }
+    		 nearestBoatBPoint = boatBpoint;
+			 minfullPathsize = result.fullPath.size();
+			 mindistance = result.totalDistance;
+    	 }
+     }
+     	return nearestBoatBPoint;
+ 	}
 }

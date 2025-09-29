@@ -3,11 +3,11 @@ package com.thelow_quest_helper.thelow_quest_helper.item;
 import java.util.Arrays;
 import java.util.List;
 
+import com.thelow_quest_helper.thelow_quest_helper.item.BestTeleport_mtb.TeleportPoint;
+
 class Dungeon {
     String name;
-    String level;
     Double x, y, z;   // 座標が無い場合は null
-    boolean available; // 利用可能かどうか
 
     Dungeon(String name, Double x, Double y, Double z) {
         this.name = name;
@@ -21,8 +21,27 @@ class Dungeon {
     }
     
     public static Dungeon getDungeonByName(String name) {
+    	int x1 = Keyclick.getPlayerBlockPos().getX(), y1 = Keyclick.getPlayerBlockPos().getY(), z1 = Keyclick.getPlayerBlockPos().getZ();
         for (Dungeon d : dungeons) {
-            if (d.name.equals(name)) {
+        	
+            if (d.name.replaceAll(" ","").equals(name.replaceAll(" ",""))) {
+            	switch (d.name.replaceAll(" ","")){
+            	case "海獣の聖堂":
+            	case "タオピピ":
+            	case "アイシーメリー":
+            	case "サンゴヴェイル":{
+            		TeleportPoint pos = BestTeleport_mtb.findNearestBoatB(x1, y1, z1);
+            		if(pos==null)return null;
+            		Dungeon returndungeon = new Dungeon("海底村パルジャ("+d.name+")",(double) pos.x,(double) pos.y,(double) pos.z);
+            		return returndungeon;
+            		}
+            	case "海底谷に沈む研究所":{
+            		TeleportPoint pos = BestTeleport_mtb.findNearestBoatB(x1, y1, z1);
+            		if(pos==null)return null;
+            		Dungeon returndungeon = new Dungeon("海底村マーラン("+d.name+")",(double) pos.x,(double) pos.y,(double) pos.z);
+            		return returndungeon;
+            		}
+            	}
                 return d;
             }
         }
@@ -39,7 +58,7 @@ class Dungeon {
     		new Dungeon("愛の結晶", -3.0, 106.0, -9.0),
     		new Dungeon("パントリー2", 69.0, 112.0, 17.0),
     		new Dungeon("エルドール地下室", 12.0, 116.0, 2.0),
-    		new Dungeon("精錬所の地下", -9.0, 111.0, -50.0),
+    		new Dungeon("精錬所の地下", 2.0, 112.0, -4.0),
     		new Dungeon("サラビサの地下道", 9.0, 116.0, -26.0),
     		new Dungeon("技能の水路", -37.0, 114.0, 24.0),
     		new Dungeon("Forssa", -126.0, 160.0, 164.0),
@@ -126,7 +145,7 @@ class Dungeon {
     		new Dungeon("訓練所:第1訓練室、第2訓練室", -1014.0, 69.0, 822.0),
     		new Dungeon("アンラルガの館", 1327.0, 117.0, -1065.0),
     		new Dungeon("石工の洞窟", 1300.0, 80.0, -48.0),
-    		new Dungeon("センレイソン", -146.0, 72.0, 272.0),
+    		new Dungeon("センレイソン", -79.0, 136.0,317.0),
     		new Dungeon("ジャデュベ廃坑", -838.0, 108.0, -1250.0),
     		new Dungeon("Deja_Boo", 907.0, 90.0, -400.0),
     		new Dungeon("Qesqer -カシュガル-", -1123.0, 62.0, -670.0),
@@ -163,7 +182,7 @@ class Dungeon {
     		new Dungeon("ベルフォート鉱山", -1070.0, 63.0, 708.0),
     		new Dungeon("クラーゲン海溝", -64.0, 67.0, 880.0),
     		new Dungeon("クリベラ洞窟", -345.0, 92.0, -363.0),
-    		new Dungeon("クラバスタ(厄災去りて闇に沈む)", 1220.0, 17.0, -1294.0),
+    		new Dungeon("クラバスタ", 1220.0, 17.0, -1294.0),
     		new Dungeon("Mycelium cave", 870.0, 22.0, -1283.0),
     		new Dungeon("冥妬の洞窟：鬼哭の遺跡", 1204.0, 101.0, 172.0),
     		new Dungeon("碧の洞窟", -500.0, 42.0, 1284.0),
@@ -208,7 +227,7 @@ class Dungeon {
     		new Dungeon("追憶と創世の間", 90.0, 88.0, -567.0),
     		new Dungeon("Rune of Arcadia", 90.0, 88.0, -567.0),
     		new Dungeon("アズレーシャ前哨基地", -1326.0, 71.0, 475.0),
-    		new Dungeon("ヒガシニャル二連式実験場", -1040.0, 87.0, 737.0),
+    		new Dungeon("ヒガシニャル二連式実験場", -690.0, 68.5, 1204.0),
     		new Dungeon("Xen's Castle", 857.0, 66.0, -745.0),
     		new Dungeon("浮世の砂海", -992.0, 46.0, -1145.0),
     		new Dungeon("永久に眠る図書館", -619.0, 29.0, -658.0),
@@ -222,7 +241,7 @@ class Dungeon {
     		new Dungeon("旧エルドール採掘場 -特殊採掘区画-", 69.0, 94.0, 8.0),
     		new Dungeon("旧エルドール採掘場 -特殊採掘区画- ", 69.0, 94.0, 8.0),
     		new Dungeon("零次元の領域:天", 1490.0, 129.0, 210.0),
-    		new Dungeon("海底谷に沈む研究所",  null,  null,  null),
+    		new Dungeon("海底谷に沈む研究所 ",  null,  null,  null),
     		new Dungeon("封絶の輪廻", -1010.0, 63.0, 622.0),
     		new Dungeon("常闇の城将",  null,  null,  null),
     		new Dungeon("零次元の領域:獄", 818.0, 167.0, -79.0),

@@ -58,7 +58,7 @@ public class APIListener {
                         if(mcid.equals(my_mcid)) {
                         	JsonObject clanInfo = response.get("clanInfo").getAsJsonObject();
                         	String clanRank = clanInfo.get("clanRank").getAsString();
-                        	if("UNRANKED".contains(clanRank)||"IRON".contains(clanRank)||"GOLD".contains(clanRank)||"LAPIS".contains(clanRank)||"EMERALD".contains(clanRank)||"REDSTONE".contains(clanRank)||"DIAMOND".contains(clanRank)) {
+                        	if("UNRANKED".equals(clanRank)||"IRON".startsWith(clanRank)||"GOLD".startsWith(clanRank)||"LAPIS".startsWith(clanRank)||"EMERALD".startsWith(clanRank)||"REDSTONE".startsWith(clanRank)||"DIAMOND".startsWith(clanRank)) {
                         		isClantp = false;
                         	}else {
                         		isClantp = true;
@@ -75,7 +75,7 @@ public class APIListener {
         }
     }
 
-    @SubscribeEvent
+    @SubscribeEvent(priority = EventPriority.LOWEST)
     public void APIcancel(ClientChatReceivedEvent event) {
         String message = event.message.getUnformattedText(); // 色コードや装飾を除去したテキスト
         
@@ -133,7 +133,6 @@ public class APIListener {
         		cmd_ct=0;
         	}
         }
-        System.out.println(can_cmd_send+"/"+cmd_ct);
     }
 
 

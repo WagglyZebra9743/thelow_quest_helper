@@ -1,8 +1,8 @@
 [
 {
   "modid": "thelow_quest_helper",
-  "name": "lunachat like ",
-  "description": "\u30ed\u30fc\u30de\u5b57\u3092\u65e5\u672c\u8a9e\u306b\u5909\u63db\u3059\u308bmod",
+  "name": "thelow_quest_helper ",
+  "description": "\u30af\u30a8\u30b9\u30c8\u3092\u52a9\u3051\u308bmod",
   "version": "${version}",
   "mcversion": "${mcversion}",
   "url": "",
