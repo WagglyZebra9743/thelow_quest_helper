@@ -32,6 +32,7 @@ public class APIListener {
     private static int cmd_ct = 0;
     public static String cleardDungeonName = "ダミー";
     private static boolean version_Checked = false;
+    private static int SendVersionTimer = 0;
     
     private static final Minecraft mc = Minecraft.getMinecraft();
 
@@ -41,35 +42,8 @@ public class APIListener {
     	final String msg = event.message.getUnformattedText();
     	final String colormsg = event.message.getFormattedText();
     	if(!version_Checked&&thelow_quest_helperConfig.AutoVersionCheck&&colormsg.startsWith("§r§a倉庫データを取得しました")) {
-    		if(thelow_quest_helper.latestver.equals(""))return;
-    		version_Checked = true;
-    		int status = thelow_quest_helper.the_status;
-    		if(status==-1)return;
-    		switch (status){
-    			case 0:{//安定バージョン
-    				sendchat("§a[thelow_quest_helper]§7新バージョンが利用可能です"+thelow_quest_helper.VERSION_STRING+"→"+thelow_quest_helper.latestver,mc.thePlayer);
-    				sendClickableLink("https://github.com/WagglyZebra9743/thelow_quest_helper/releases/latest");
-    				return;
-    			}
-    			case 1:{//特殊な使い方をすると不具合が出る
-    				sendchat("§a[thelow_quest_helper]§e軽微な不具合があるバージョンです",mc.thePlayer);
-    				sendchat("§e新バージョンが利用可能です"+thelow_quest_helper.VERSION_STRING+"→"+thelow_quest_helper.latestver,mc.thePlayer);
-    				sendClickableLink("https://github.com/WagglyZebra9743/thelow_quest_helper/releases/latest");
-    				return;
-    			}
-    			case 2:{//人によっては表示が崩れる等の不具合が出る
-    				sendchat("§a[thelow_quest_helper]§6中程度な不具合があるバージョンです",mc.thePlayer);
-    				sendchat("§6新バージョンが利用可能です"+thelow_quest_helper.VERSION_STRING+"→"+thelow_quest_helper.latestver,mc.thePlayer);
-    				sendClickableLink("https://github.com/WagglyZebra9743/thelow_quest_helper/releases/latest");
-    				return;
-    			}
-    			case 3:{//不具合が出るしクラッシュ等も起きる
-    				sendchat("§a[thelow_quest_helper]§c重大な不具合があるバージョンです",mc.thePlayer);
-    				sendchat("§c新バージョンに更新することを推奨します"+thelow_quest_helper.VERSION_STRING+"→"+thelow_quest_helper.latestver,mc.thePlayer);
-    				sendClickableLink("https://github.com/WagglyZebra9743/thelow_quest_helper/releases/latest");
-    				return;
-    			}
-    		}
+    		SendVersionText();
+    		SendVersionTimer = 40;
         }
         
         
@@ -168,6 +142,12 @@ public class APIListener {
     @SubscribeEvent
     public void onClientTick(TickEvent.ClientTickEvent event) {
         if (event.phase == TickEvent.Phase.START)return;//TickEventはSTARTとENDの2回発火するので1回にする
+        if(SendVersionTimer>0) {
+        	SendVersionTimer--;
+        	if(SendVersionTimer==0) {
+        		SendVersionText();
+        	}
+        }
         if(!MarkerRenderer.IsThereMarker()) {
         	TickTimer = 0;
         	cmd_ct=0;
@@ -222,5 +202,40 @@ public class APIListener {
         if (Minecraft.getMinecraft().thePlayer != null) {
             Minecraft.getMinecraft().thePlayer.addChatMessage(component);
         }
+    }
+    
+    private static void SendVersionText() {
+		if(thelow_quest_helper.latestver.equals(""))return;
+		version_Checked = true;
+		int status = thelow_quest_helper.the_status;
+		if(thelow_quest_helper.CustomMsg!=null&&!thelow_quest_helper.CustomMsg.equals("")&&!thelow_quest_helper.CustomMsg.equals("OK")) {
+			sendchat("§a[thelow_quest_helper]" + thelow_quest_helper.CustomMsg,mc.thePlayer);
+		}
+		if(status==-1)return;
+		switch (status){
+			case 0:{//安定バージョン
+				sendchat("§a[thelow_quest_helper]§7新バージョンが利用可能です"+thelow_quest_helper.VERSION_STRING+"→"+thelow_quest_helper.latestver,mc.thePlayer);
+				sendClickableLink("https://github.com/WagglyZebra9743/thelow_quest_helper/releases/latest");
+				return;
+			}
+			case 1:{//特殊な使い方をすると不具合が出る
+				sendchat("§a[thelow_quest_helper]§e軽微な不具合があるバージョンです",mc.thePlayer);
+				sendchat("§e新バージョンが利用可能です"+thelow_quest_helper.VERSION_STRING+"→"+thelow_quest_helper.latestver,mc.thePlayer);
+				sendClickableLink("https://github.com/WagglyZebra9743/thelow_quest_helper/releases/latest");
+				return;
+			}
+			case 2:{//人によっては表示が崩れる等の不具合が出る
+				sendchat("§a[thelow_quest_helper]§6中程度な不具合があるバージョンです",mc.thePlayer);
+				sendchat("§6新バージョンが利用可能です"+thelow_quest_helper.VERSION_STRING+"→"+thelow_quest_helper.latestver,mc.thePlayer);
+				sendClickableLink("https://github.com/WagglyZebra9743/thelow_quest_helper/releases/latest");
+				return;
+			}
+			case 3:{//不具合が出るしクラッシュ等も起きる
+				sendchat("§a[thelow_quest_helper]§c重大な不具合があるバージョンです",mc.thePlayer);
+				sendchat("§c新バージョンに更新することを推奨します"+thelow_quest_helper.VERSION_STRING+"→"+thelow_quest_helper.latestver,mc.thePlayer);
+				sendClickableLink("https://github.com/WagglyZebra9743/thelow_quest_helper/releases/latest");
+				return;
+			}
+		}
     }
 }

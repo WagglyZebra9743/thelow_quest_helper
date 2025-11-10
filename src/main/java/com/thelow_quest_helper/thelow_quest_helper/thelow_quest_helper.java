@@ -36,6 +36,7 @@ public class thelow_quest_helper {
     private static String API_URL = "https://script.google.com/macros/s/"+key+"/exec";
     public static String latestver = "";
     public static int the_status = -1;
+    public static String CustomMsg = "";
 
 	@Mod.EventHandler
     public void preInit(FMLPreInitializationEvent event) {
@@ -85,6 +86,7 @@ public class thelow_quest_helper {
 
             latestver = apiResponse.latestVersion;
             the_status = apiResponse.currentStatus;
+            CustomMsg = apiResponse.CustomMsg;
 
             System.out.println("[thelow_quest_helper]this_version: "+ VERSION_STRING+",status: " + the_status +",latest: " + latestver);
             
@@ -165,4 +167,5 @@ class VersionResponse {
     public String latestVersion;
     public int currentStatus;
     public int nextStatus;
+    public String CustomMsg;
 }
