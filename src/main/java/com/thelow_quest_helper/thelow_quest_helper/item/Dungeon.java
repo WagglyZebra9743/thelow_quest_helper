@@ -5,9 +5,9 @@ import java.util.List;
 
 import com.thelow_quest_helper.thelow_quest_helper.item.BestTeleport_mtb.TeleportPoint;
 
-class Dungeon {
-    String name;
-    Double x, y, z;   // 座標が無い場合は null
+public class Dungeon {
+    public final String name;
+    public final Double x, y, z;   // 座標が無い場合は null
 
     Dungeon(String name, Double x, Double y, Double z) {
         this.name = name;
@@ -20,11 +20,11 @@ class Dungeon {
         return x != null && y != null && z != null;
     }
     
-    public static Dungeon getDungeonByName(String name) {
-    	int x1 = Keyclick.getPlayerBlockPos().getX(), y1 = Keyclick.getPlayerBlockPos().getY(), z1 = Keyclick.getPlayerBlockPos().getZ();
-        for (Dungeon d : dungeons) {
+    public static Dungeon getDungeonByName(final String name) {
+    	final int x1 = Keyclick.getPlayerBlockPos().getX(), y1 = Keyclick.getPlayerBlockPos().getY(), z1 = Keyclick.getPlayerBlockPos().getZ();
+        for (final Dungeon d : dungeons) {
         	
-            if (d.name.replaceAll(" ","").equals(name.replaceAll(" ",""))) {
+            if (d.name.replaceAll(" ","").equals(name.replaceAll(" ","").replaceAll("§.", ""))) {
             	switch (d.name.replaceAll(" ","")){
             	case "海獣の聖堂":
             	case "タオピピ":
@@ -32,13 +32,13 @@ class Dungeon {
             	case "サンゴヴェイル":{
             		TeleportPoint pos = BestTeleport_mtb.findNearestBoatB(x1, y1, z1);
             		if(pos==null)return null;
-            		Dungeon returndungeon = new Dungeon("海底村パルジャ("+d.name+")",(double) pos.x,(double) pos.y,(double) pos.z);
+            		final Dungeon returndungeon = new Dungeon("海底村パルジャ("+d.name+")",(double) pos.x,(double) pos.y,(double) pos.z);
             		return returndungeon;
             		}
             	case "海底谷に沈む研究所":{
             		TeleportPoint pos = BestTeleport_mtb.findNearestBoatB(x1, y1, z1);
             		if(pos==null)return null;
-            		Dungeon returndungeon = new Dungeon("海底村マーラン("+d.name+")",(double) pos.x,(double) pos.y,(double) pos.z);
+            		final Dungeon returndungeon = new Dungeon("海底村マーラン("+d.name+")",(double) pos.x,(double) pos.y,(double) pos.z);
             		return returndungeon;
             		}
             	}
@@ -48,7 +48,8 @@ class Dungeon {
         return null; // 該当なし
     }
     
-    private static double[] thank = {522.0,70.0,-678.0};
+    private static final double[] thank = {522.0,70.0,-678.0};
+    private static final double[] lux_ex = {143.0, 170.0, -485.0};
     
     
     private static final List<Dungeon> dungeons = Arrays.asList(
@@ -79,7 +80,7 @@ class Dungeon {
     		new Dungeon("エルドールの森", -10.0, 122.0, 47.0),
     		new Dungeon("ソラリス大木", -300.0, 163.0, 82.0),
     		new Dungeon("ルーレイ洞窟", -698.0, 79.0, 204.0),
-    		new Dungeon("フレデリック・マウンド(FrederickMound)", 350.0, 75.0, -219.0),
+    		new Dungeon("フレデリック・マウンド(FrederickMound）", 350.0, 75.0, -219.0),//後ろのカッコだけ全角
     		new Dungeon("エルドールの レストラン", 40.0, 116.0, -7.0),
     		new Dungeon("エルドール教会の地下", -55.0, 118.0, -37.0),
     		new Dungeon("桜ダンジョン", -25.0, 119.0, -3.0),
@@ -100,7 +101,7 @@ class Dungeon {
     		new Dungeon("ガルダ", 154.0, 120.0, -1055.0),
     		new Dungeon("コンカトル", -145.0, 80.0, -636.0),
     		new Dungeon("スライム洞窟", 527.0, 96.0, 329.0),
-    		new Dungeon("Oma海底ダンジョン", -1321.0, 72.0, 894.0),
+    		new Dungeon("Oma(オマ）海底ダンジョン", -1321.0, 72.0, 894.0),//後ろカッコだけ全角
     		new Dungeon("旧エルドール採掘場", 69.0, 94.0, 8.0),
     		new Dungeon("Ali's nest", 210.0, 111.0, 431.0),
     		new Dungeon("名もなき池", -150.0, 88.0, -238.0),
@@ -191,7 +192,7 @@ class Dungeon {
     		new Dungeon("凍てつく鉱山", 1406.0, 70.0, -1088.0),
     		new Dungeon("森の館", -1248.0, 68.0, 33.0),
     		new Dungeon("虚空の地下", -902.0, 69.0, 1124.0),
-    		new Dungeon("メルべリアスの森", -992.0, 67.0, 239.0),
+    		new Dungeon("メルべリアスの森", -992.0, 67.0, 239.0),//「べ」はひらがな
     		new Dungeon("不完全な拷問所", -386.0, 130.0, 246.0),
     		new Dungeon("サンゴヴェイル",  null,  null,  null),
     		new Dungeon("紅城", -783.0, 35.0, -1156.0),
@@ -223,14 +224,14 @@ class Dungeon {
     		new Dungeon("力試し", -80.0, 187.0, 1221.0),
     		new Dungeon("ムスペルヘイム(バジリスク溶岩洞窟)", -884.0, 92.0, 565.0),
     		new Dungeon("Vaaasa", 1424.0, 133.0, -1180.0),
-    		new Dungeon("輝煌の残滓", 90.0, 88.0, -567.0),
-    		new Dungeon("追憶と創世の間", 90.0, 88.0, -567.0),
-    		new Dungeon("Rune of Arcadia", 90.0, 88.0, -567.0),
+    		new Dungeon("輝煌の残滓", lux_ex[0], lux_ex[1], lux_ex[2]),
+    		new Dungeon("追憶と創世の間", lux_ex[0], lux_ex[1], lux_ex[2]),
+    		new Dungeon("Rune of Arcadia", lux_ex[0], lux_ex[1], lux_ex[2]),
     		new Dungeon("アズレーシャ前哨基地", -1326.0, 71.0, 475.0),
     		new Dungeon("ヒガシニャル二連式実験場", -690.0, 68.5, 1204.0),
     		new Dungeon("Xen's Castle", 857.0, 66.0, -745.0),
     		new Dungeon("浮世の砂海", -992.0, 46.0, -1145.0),
-    		new Dungeon("永久に眠る図書館", -619.0, 29.0, -658.0),
+    		new Dungeon("永久に眠る図書館", -748.0, 80.0, -596.0),
     		new Dungeon("禍の日輪", 1504.0, 55.0, 380.0),
     		new Dungeon("ドラゴン族の村", -1159.0, 81.0, 604.0),
     		new Dungeon("零次元の領域:静", 1106.0, 147.0, -220.0),
@@ -260,16 +261,17 @@ class Dungeon {
     		new Dungeon("Estrada Of Cave", -1023.0, 71.0, -107.0),
     		new Dungeon("Desert Templum", -1197.0, 121.0, -1165.0),
     		new Dungeon("IceCave", 1437.0, 153.0, -1222.0),
-    		new Dungeon("Lux et Tenebrae -光-", 90.0, 88.0, -567.0),
-    		new Dungeon("Lux et Tenebrae -闇-", 90.0, 88.0, -567.0),
+    		new Dungeon("Lux et Tenebrae -光-", lux_ex[0], lux_ex[1], lux_ex[2]),
+    		new Dungeon("Lux et Tenebrae -闇-", lux_ex[0], lux_ex[1], lux_ex[2]),
     		new Dungeon("Tower of Judgement", -378.0, 30.0, 1360.0),
     		new Dungeon("魔界：封印の洞窟", 1470.0, 70.0, -790.0),
     		new Dungeon("魔界：ヘルスラ", -906.0, 78.0, -704.0),
-    		new Dungeon("蒼天に舞う輝煌の創者", 90.0, 88.0, -567.0),
+    		new Dungeon("蒼天に舞う輝煌の創者", lux_ex[0], lux_ex[1], lux_ex[2]),
     		new Dungeon("蒼紅双閃",  null,  null,  null),
     		new Dungeon("ドラゴンの谷", -1106.0, 89.0, 623.0),
     		new Dungeon("魔界：ソマの谷", 972.0, 75.0, 214.0),
     		new Dungeon("Last Judgement", -948.0, 178.0, 865.0),
+    		new Dungeon("純白の宮殿", 1156.0, 80.0, -932.0),
     		new Dungeon("純白の宮殿 -Solo-", 1156.0, 80.0, -932.0),
     		new Dungeon("純白の宮殿 -Ultimate-", 1156.0, 80.0, -932.0),
     		new Dungeon("純白の宮殿 -Hard-", 1156.0, 80.0, -932.0),

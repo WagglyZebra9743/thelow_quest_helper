@@ -34,7 +34,7 @@ public class MarkerRenderer {
     
     public static boolean marker_enable = true;
     private static boolean current_enable = true;
-    Minecraft mc = Minecraft.getMinecraft();
+    final Minecraft mc = Minecraft.getMinecraft();
     private static int i = 0;
 
     // マーカーを追加する処理
@@ -65,11 +65,10 @@ public class MarkerRenderer {
     	}
     	
     	if(!marker_enable&&APIListener.gasya&&APIListener.can_cmd_send) {
-    		BlockPos blockpos = Keyclick.getPlayerBlockPos();
-    		int x1 = blockpos.getX(),y1=blockpos.getY(),z1=blockpos.getZ();
+    		final BlockPos blockpos = Keyclick.getPlayerBlockPos();
+    		final int x1 = blockpos.getX(),y1=blockpos.getY(),z1=blockpos.getZ();
     		if(x1==-1253&&y1==85&&z1==-973){
     			mc.thePlayer.sendChatMessage("/thelow_api location");
-    			System.out.println("gacha to thelow");
     			APIListener.gasya = false;
     			APIListener.can_cmd_send=false;
     		}
@@ -77,11 +76,10 @@ public class MarkerRenderer {
     	
     	//飛空艇の移動先座標でリセット
     	if(!marker_enable&&APIListener.can_cmd_send) {
-    		BlockPos blockpos = Keyclick.getPlayerBlockPos();
-    		int x1 = blockpos.getX(),y1=blockpos.getY(),z1=blockpos.getZ();
+    		final BlockPos blockpos = Keyclick.getPlayerBlockPos();
+    		final int x1 = blockpos.getX(),y1=blockpos.getY(),z1=blockpos.getZ();
     		if((x1==-150&&y1==184&&z1==1293)||(x1==1319&&y1==127&&z1==-929)||(x1==-935&&y1==102&&z1==1142)||(x1==-1127&&y1==128&&z1==-794)||(x1==-37&&y1==128&&z1==909)||(x1==-382&&y1==101&&z1==-1265)||(x1==-463&&y1==152&&z1==-608)){
     			mc.thePlayer.sendChatMessage("/thelow_api location");
-    			System.out.println("airship to thelow");
     			APIListener.can_cmd_send=false;
     		}
     	}
@@ -89,13 +87,13 @@ public class MarkerRenderer {
     	//マーカーが無効なら表示しない
     	if(!marker_enable)return;
     	
-        RenderManager rm = mc.getRenderManager();
+    	final RenderManager rm = mc.getRenderManager();
         if (rm == null) return;
         
         //マーカー情報が無いなら終了
         if(markers==null||markers.isEmpty())return;
         //i番目のマーカーの情報をmに保存
-        Marker m = markers.get(i);
+        final Marker m = markers.get(i);
         
         //マーカーの座標とプレイヤーの表示視点の座標から、マーカーを表示する座標を取得
         //ただし、これはプレイヤーから見た時の相対座標である
@@ -165,7 +163,7 @@ public class MarkerRenderer {
 
         // ラベル描画
         // ラベルを行ごとに分割
-        String[] lines = m.label.split("\\\\n"); // 重要: \n を文字列として扱うのでエスケープ2重
+        final String[] lines = m.label.split("\\\\n"); // 重要: \n を文字列として扱うのでエスケープ2重
 
         FontRenderer font = mc.fontRendererObj;
                      

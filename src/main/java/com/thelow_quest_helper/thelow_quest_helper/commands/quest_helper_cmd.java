@@ -37,7 +37,7 @@ public class quest_helper_cmd extends CommandBase {
         	sendmsg("§c使用方法: /quest_helper <clearmarker/reload/help> ",sender);
             return;
         }
-        String sub = args[0];
+        final String sub = args[0];
 
         switch (sub.toLowerCase()) {
         	case "clearmarker":{
@@ -69,7 +69,7 @@ public class quest_helper_cmd extends CommandBase {
     }
     
     @Override
-    public boolean canCommandSenderUseCommand(ICommandSender sender) {
+    public boolean canCommandSenderUseCommand(final ICommandSender sender) {
         return true;
     }
 
@@ -89,7 +89,7 @@ public class quest_helper_cmd extends CommandBase {
     }
 
     @Override
-    public List<String> addTabCompletionOptions(ICommandSender sender, String[] args, BlockPos pos) {
+    public List<String> addTabCompletionOptions(final ICommandSender sender, final String[] args, BlockPos pos) {
         if (args.length == 1) {
             List<String> options = new ArrayList<>();
             options.add("clearmarker");
@@ -100,7 +100,7 @@ public class quest_helper_cmd extends CommandBase {
         return null;
     }
     
-    private static void sendmsg(String msg , ICommandSender sender) {
+    private static void sendmsg(final String msg , final ICommandSender sender) {
     	sender.addChatMessage(new ChatComponentText(msg));
     }
 }

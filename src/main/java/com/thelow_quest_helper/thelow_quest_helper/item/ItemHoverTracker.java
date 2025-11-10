@@ -23,38 +23,32 @@ public class ItemHoverTracker {
 	
     @SubscribeEvent
     public void onItemTooltip(ItemTooltipEvent event) {
-        ItemStack stack = event.itemStack;
-        Item item = stack.getItem();
-        String id = Item.itemRegistry.getNameForObject(item).toString();
+    	final ItemStack stack = event.itemStack;
+    	final Item item = stack.getItem();
+    	final String id = Item.itemRegistry.getNameForObject(item).toString();
         if(id==null||(!id.equals("minecraft:book")&&!id.equals("minecraft:written_book")&&!id.equals("minecraft:wool")&&!id.equals("minecraft:paper")&&!id.equals("minecraft:writable_book")&&!id.equals("minecraft:coal_block")&&!id.equals("minecraft:gold_block")&&!id.equals("minecraft:diamond_block")&&!id.equals("minecraft:glowstone")&&!id.equals("minecraft:emerald_block")))return;
 
         if (stack != null && stack.hasTagCompound()) {
-            List<String> tooltip = event.toolTip;
-            NBTTagCompound nbt = stack.getTagCompound();
-            NBTTagCompound display = null;
+        	List<String> tooltip = event.toolTip;
+        	final NBTTagCompound nbt = stack.getTagCompound();
+        	final NBTTagCompound display = GetdisplayFromNBT(nbt);
+            if(display==null)return;
             /*System.out.println(nbt);*/
             
             List<String> lore = new ArrayList<>();
                 
-                if(nbt.hasKey("display", 10)) { // 10 = NBTTagCompound
-                    display = nbt.getCompoundTag("display");
-                    if (display.hasKey("Lore", 9)) { // 9 = NBTTagList
-                        NBTTagList loreList = display.getTagList("Lore", 8); // 8 = String tag
-                        for (int i = 0; i < loreList.tagCount(); i++) {
-                            lore.add(loreList.getStringTagAt(i));
-                    }
-                }
-            }
-                if(display==null)return;
-                
+            
+            lore = GetLoreFromdisplay(display);
+            if(lore==null)return;
+            
             lastLore = lore;
             
              
             //紙だったらCTのクエストかをloreで確認して表示する
             if(id.equals("minecraft:paper")) {
-            	int timem = getTime(lore,"このクエストは一定時間後に再度受けられます。残り時間:","残り時間:([0-9]+)分");
+            	final int timem = getTime(lore,"このクエストは一定時間後に再度受けられます。残り時間:","残り時間:([0-9]+)分");
             	if(timem==-1)return;
-            	String text = time_creater.operation(timem);
+            	final String text = time_creater.operation(timem);
                 if(text==null||text.isEmpty())return;
                 
                 // 空行挿入して見やすくする
@@ -65,65 +59,65 @@ public class ItemHoverTracker {
             
             //羊毛だったらクランクエストかをloreで確認して表示する
             if(id.equals("minecraft:wool")){
-            	int timem = getTime(lore,"有効期限:","有効期限:([0-9]+)分");
+            	final int timem = getTime(lore,"有効期限:","有効期限:([0-9]+)分");
             	if(timem==-1)return;
-            	String text = time_creater.operation(timem);
+            	final String text = time_creater.operation(timem);
             	if(text==null||text.isEmpty())return;
             	
                 // 説明文の下に追記
                 tooltip.add("更新予定:"+text);
                 
-                if(display != null&&display.hasKey("Name")) {
-    				lastQuestname = display.getString("Name");
-    				String dungeonname = display.getString("Name").replaceAll("§.", "").replaceAll("を攻略する","").trim();
-    				Dungeon d = Dungeon.getDungeonByName(dungeonname);
-    				if(d==null||d.x==null||d.y==null||d.z==null)return;
-    				String info = Town.getNearestTownInfo(d.x, d.y, d.z);
-    				tooltip.add(dungeonname+"§e("+d.x+","+d.y+","+d.z+")");
-    				String[] texts = info.split("\\\\n");
-    				
-    				for(String text1 : texts) {
-    					tooltip.add("§7" + text1.replace("\n", ""));
-    				}
-    				tooltip.add("§a[W]キーでマーカーを設置できます");
-    				tooltip.add("§a[Z]キーでルート案内を開始します");
-    			}
+                if(display == null||!display.hasKey("Name"))return;
+                lastQuestname = display.getString("Name");
+                final String dungeonname = GetClanQuestDungeonName(display);
+    			if(dungeonname==null)return;
+    			Dungeon d = Dungeon.getDungeonByName(dungeonname);
+    			if(d==null||d.x==null||d.y==null||d.z==null)return;
+    			final String info = Town.getNearestTownInfo(d.x, d.y, d.z);
+   				tooltip.add(dungeonname+"§e("+d.x+","+d.y+","+d.z+")");
+   				final String[] texts = info.split("\\\\n");
+    			
+    			for(String text1 : texts) {
+   					tooltip.add("§7" + text1.replace("\n", ""));
+   				}
+    			//tooltip.add("§a[W]キーでマーカーを設置できます");
+    			tooltip.add("§a[Z]キーでルート案内を開始します");
+    			tooltip.add("§a[F]キーでこのクエストにフォーカスします");
             }
             
             if((id.equals("minecraft:book")||id.equals("minecraft:written_book")||id.equals("minecraft:writable_book")||id.equals("minecraft:coal_block")||id.equals("minecraft:gold_block")||id.equals("minecraft:diamond_block")||id.equals("minecraft:glowstone")||id.equals("minecraft:emerald_block"))) {
             	
             	//もし地上世界の座標が表示されているならそこにマーカーを設置する
-            	for (String line : lore) {
+            	for (final String line : lore) {
             		// §や全角スペースの除去を先にする
-            		String clean = line.replaceAll("§.", "").trim();
+            		final String clean = line.replaceAll("§.", "").trim();
             		if(clean.contains("地上世界")) {
             			// 緩い正規表現で数字3つを拾う
-                		Matcher matcher = Pattern.compile(".*\\((-?[0-9.]+),\\s*(-?[0-9.]+),\\s*(-?[0-9.]+)\\)").matcher(clean);
+            			final Matcher matcher = Pattern.compile(".*\\((-?[0-9.]+),\\s*(-?[0-9.]+),\\s*(-?[0-9.]+)\\)").matcher(clean);
                 		if (matcher.find()) {
                 			if(display.hasKey("Name")) {
                 				lastQuestname = display.getString("Name");
                 				lastNPCname = clean.split(" : ")[0];
                 			}
-                            tooltip.add("§a[W]キーでマーカーを設置できます");
+                            //tooltip.add("§a[W]キーでマーカーを設置できます");
                             tooltip.add("§a[Z]キーでルート案内を開始します");
                             break;
                         }
             		}
             		if((clean.contains("攻略する")||(clean.contains("クリア")&&!clean.contains("クリア条件")))) {
             			if(!clean.contains("を"))return;
-            			String dungeonName = clean.split("を")[0];
-            			Dungeon d = Dungeon.getDungeonByName(dungeonName);
+            			final String dungeonName = clean.split("を")[0];
+            			final Dungeon d = Dungeon.getDungeonByName(dungeonName);
                     	if(d==null||d.x==null||d.y==null||d.z==null) {
-                    		System.out.println("d is null");
                     		return;
                     	}
-        				String info = Town.getNearestTownInfo(d.x, d.y, d.z);
+                    	final String info = Town.getNearestTownInfo(d.x, d.y, d.z);
         				if(info==null)return;
-        				String[] texts = info.split("\\\\n");
-        				for(String text1 : texts) {
+        				final String[] texts = info.split("\\\\n");
+        				for(final String text1 : texts) {
         					tooltip.add("§7" + text1.replace("\n",""));
         				}
-        				tooltip.add("§a[W]キーでマーカーを設置できます");
+        				//tooltip.add("§a[W]キーでマーカーを設置できます");
         				tooltip.add("§a[Z]キーでルート案内を開始します");
         				break;
             		}
@@ -132,12 +126,12 @@ public class ItemHoverTracker {
         }
     }
     
-    private static int getTime(List<String> lore, String startText, String regex) {
+    public static int getTime(List<String> lore, String startText, String regex) {
         String loreline = "";
 
         // loreから対象の行を探す
-        for (String line : lore) {
-            String loretext = line.replaceAll("§.", "");
+        for (final String line : lore) {
+        	final String loretext = line.replaceAll("§.", "");
             if (loretext != null && loretext.contains(startText)) {
                 loreline = loretext;
                 break;
@@ -146,7 +140,7 @@ public class ItemHoverTracker {
 
         // JSONの可能性をチェック
         try {
-            JsonObject json = new JsonParser().parse(loreline).getAsJsonObject();
+        	final JsonObject json = new JsonParser().parse(loreline).getAsJsonObject();
             if (json.has("text")) {
                 loreline = json.get("text").getAsString();
             }
@@ -158,11 +152,40 @@ public class ItemHoverTracker {
         loreline = loreline.replaceAll("§[0-9a-fk-or]", "");
 
         // 正規表現で時間を抽出
-        Matcher matcher = Pattern.compile(regex).matcher(loreline);
+        final Matcher matcher = Pattern.compile(regex).matcher(loreline);
         if (matcher.find()) {
             return Integer.parseInt(matcher.group(1));
         }
 
         return -1;
+    }
+    public static String GetClanQuestDungeonName(final NBTTagCompound display) {
+    	if(display==null||!display.hasKey("Name")||!display.getString("Name").contains("を攻略する"))return null;
+    	final String itemname = display.getString("Name");
+    	final Matcher matcher = Pattern.compile("§a(.*)を攻略する").matcher(itemname);
+    	if (matcher.find()) {
+            // (.*) にマッチした部分（キャプチャグループの1番目）を返す
+            return matcher.group(1).replace("§l", "").trim();
+        }
+    	final String dungeonname = display.getString("Name").replaceAll("§.", "").replaceAll("を攻略する","").trim();
+    	return dungeonname;
+    }
+    public static NBTTagCompound GetdisplayFromNBT(final NBTTagCompound nbt) {
+    	if(nbt==null)return null;
+    	if(nbt.hasKey("display", 10)) { // 10 = NBTTagCompound
+            return nbt.getCompoundTag("display");
+        }
+    	return null;
+    }
+    public static List<String> GetLoreFromdisplay(final NBTTagCompound display){
+    	List<String> lore = new ArrayList<>();
+    	if (display.hasKey("Lore", 9)) { // 9 = NBTTagList
+            NBTTagList loreList = display.getTagList("Lore", 8); // 8 = String tag
+            for (int i = 0; i < loreList.tagCount(); i++) {
+                lore.add(loreList.getStringTagAt(i));
+            }
+            return lore;
+        }
+    	return null;
     }
 }
