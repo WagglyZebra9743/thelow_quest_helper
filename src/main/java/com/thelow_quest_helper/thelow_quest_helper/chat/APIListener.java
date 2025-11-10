@@ -1,12 +1,22 @@
 package com.thelow_quest_helper.thelow_quest_helper.chat;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.thelow_quest_helper.thelow_quest_helper.thelow_quest_helper;
+import com.thelow_quest_helper.thelow_quest_helper.config.thelow_quest_helperConfig;
 import com.thelow_quest_helper.thelow_quest_helper.item.MarkerRenderer;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.event.ClickEvent;
 import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.ChatStyle;
+import net.minecraft.util.EnumChatFormatting;
+import net.minecraft.util.IChatComponent;
 import net.minecraftforge.client.event.ClientChatReceivedEvent;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -14,34 +24,66 @@ import net.minecraftforge.fml.common.gameevent.TickEvent;
 
 public class APIListener {
 
-    private static String latestData = null;
-    public static double[] overStrength = {1.0,1.0,1.0};
-    public static boolean status_getted = false;
-    public static boolean tickenable = false;
     public static boolean isClantp = true;
     private static int TickTimer = 0;
     private static int INTERVAL = 200;
     public static boolean gasya=false;
     public static boolean can_cmd_send = true;
     private static int cmd_ct = 0;
+    public static String cleardDungeonName = "ダミー";
+    private static boolean version_Checked = false;
     
     private static final Minecraft mc = Minecraft.getMinecraft();
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onChat(ClientChatReceivedEvent event) {
         
-        String msg = event.message.getUnformattedText();
+    	final String msg = event.message.getUnformattedText();
+    	final String colormsg = event.message.getFormattedText();
+    	if(!version_Checked&&thelow_quest_helperConfig.AutoVersionCheck&&colormsg.startsWith("§r§a倉庫データを取得しました")) {
+    		if(thelow_quest_helper.latestver.equals(""))return;
+    		version_Checked = true;
+    		int status = thelow_quest_helper.the_status;
+    		if(status==-1)return;
+    		switch (status){
+    			case 0:{//安定バージョン
+    				sendchat("§a[thelow_quest_helper]§7新バージョンが利用可能です"+thelow_quest_helper.VERSION_STRING+"→"+thelow_quest_helper.latestver,mc.thePlayer);
+    				sendClickableLink("https://github.com/WagglyZebra9743/thelow_quest_helper/releases/latest");
+    				return;
+    			}
+    			case 1:{//特殊な使い方をすると不具合が出る
+    				sendchat("§a[thelow_quest_helper]§e軽微な不具合があるバージョンです",mc.thePlayer);
+    				sendchat("§e新バージョンが利用可能です"+thelow_quest_helper.VERSION_STRING+"→"+thelow_quest_helper.latestver,mc.thePlayer);
+    				sendClickableLink("https://github.com/WagglyZebra9743/thelow_quest_helper/releases/latest");
+    				return;
+    			}
+    			case 2:{//人によっては表示が崩れる等の不具合が出る
+    				sendchat("§a[thelow_quest_helper]§6中程度な不具合があるバージョンです",mc.thePlayer);
+    				sendchat("§6新バージョンが利用可能です"+thelow_quest_helper.VERSION_STRING+"→"+thelow_quest_helper.latestver,mc.thePlayer);
+    				sendClickableLink("https://github.com/WagglyZebra9743/thelow_quest_helper/releases/latest");
+    				return;
+    			}
+    			case 3:{//不具合が出るしクラッシュ等も起きる
+    				sendchat("§a[thelow_quest_helper]§c重大な不具合があるバージョンです",mc.thePlayer);
+    				sendchat("§c新バージョンに更新することを推奨します"+thelow_quest_helper.VERSION_STRING+"→"+thelow_quest_helper.latestver,mc.thePlayer);
+    				sendClickableLink("https://github.com/WagglyZebra9743/thelow_quest_helper/releases/latest");
+    				return;
+    			}
+    		}
+        }
         
         
         if (msg.startsWith("$api")) {
             String[] split = msg.split(" ", 2);
             if (split.length == 2) {
                 try {
-                	JsonObject json = new JsonParser().parse(split[1]).getAsJsonObject();
-                    String apiType = json.get("apiType").getAsString();
+                	final JsonObject json = new JsonParser().parse(split[1]).getAsJsonObject();
+                	if(!json.has("apiType")||!json.has("response"))return;
+                	final String apiType = json.get("apiType").getAsString();
                     if("location".equals(apiType)) {
-                    	JsonObject response = json.getAsJsonObject("response");
-                        String worldName = response.get("worldName").getAsString();
+                    	final JsonObject response = json.getAsJsonObject("response");
+                    	if(response.has("worldName"))return;
+                    	final String worldName = response.get("worldName").getAsString();
                         if(worldName.equals("thelow")) {
                         	MarkerRenderer.marker_enable = true;
                         	gasya=false;
@@ -52,12 +94,21 @@ public class APIListener {
                         }
                     }
                     if("player_status".equals(apiType)) {
-                    	JsonObject response = json.getAsJsonObject("response");
-                        String mcid = response.get("mcid").getAsString();
-                        String my_mcid = mc.thePlayer.getName();
+                    	final JsonObject response = json.getAsJsonObject("response");
+                    	if(!response.has("mcid"))return;
+                    	final String mcid = response.get("mcid").getAsString();
+                    	final String my_mcid = mc.thePlayer.getName();
                         if(mcid.equals(my_mcid)) {
-                        	JsonObject clanInfo = response.get("clanInfo").getAsJsonObject();
-                        	String clanRank = clanInfo.get("clanRank").getAsString();
+                        	if(!response.has("clanInfo")) {
+                        		isClantp=false;
+                        		return;
+                        	}
+                        	final JsonObject clanInfo = response.get("clanInfo").getAsJsonObject();
+                        	if(!clanInfo.has("clanRank")) {
+                        		isClantp = false;
+                        		return;
+                        	}
+                        	final String clanRank = clanInfo.get("clanRank").getAsString();
                         	if("UNRANKED".equals(clanRank)||"IRON".startsWith(clanRank)||"GOLD".startsWith(clanRank)||"LAPIS".startsWith(clanRank)||"EMERALD".startsWith(clanRank)||"REDSTONE".startsWith(clanRank)||"DIAMOND".startsWith(clanRank)) {
                         		isClantp = false;
                         	}else {
@@ -77,10 +128,11 @@ public class APIListener {
 
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public void APIcancel(ClientChatReceivedEvent event) {
-        String message = event.message.getUnformattedText(); // 色コードや装飾を除去したテキスト
+        final String message = event.message.getUnformattedText(); // 色コードや装飾を除去したテキスト
+        final String colormessage = event.message.getFormattedText();
         
         //killとかで死んでダンジョンから出た想定
-        String mcid = mc.thePlayer.getName();
+        final String mcid = mc.thePlayer.getName();
         if(message.contains(mcid)&&MarkerRenderer.IsThereMarker()&&APIListener.can_cmd_send) {
         	mc.thePlayer.sendChatMessage("/thelow_api location");
         	can_cmd_send = false;
@@ -93,6 +145,19 @@ public class APIListener {
         
         if(message.contains("ここに置くガチャは増えていくかもしれません。")) {
         	gasya=true;
+        }
+        
+        if((colormessage.startsWith("§r§a")||colormessage.startsWith("§r§b[NEW RECORDING] §r§a"))&&message.contains("の攻略時間")) {
+        	final Matcher matcher = Pattern.compile("§r§a(.*)の攻略時間").matcher(colormessage);
+        	if (matcher.find()) {
+                // (.*) にマッチした部分（キャプチャグループの1番目）がダンジョン名
+        		cleardDungeonName = matcher.group(1);
+            }else {
+            	final Matcher NewRecordmatcher = Pattern.compile("§r§b[NEW RECORDING] §r§a(.*)§r§aの攻略時間 ").matcher(colormessage);
+            	if(NewRecordmatcher.find()) {
+            		cleardDungeonName = NewRecordmatcher.group(1);
+            	}
+            }
         }
         
         if (message.startsWith("$api")) {
@@ -108,9 +173,9 @@ public class APIListener {
         	cmd_ct=0;
         	return;//マーカーが無いなら処理しない
         }
+        final EntityPlayer player = mc.thePlayer;
         TickTimer++;//1ずつ加算
         if (TickTimer%INTERVAL == 1) {//特定の値なら
-            EntityPlayer player = mc.thePlayer;
             if (player != null) {
             	//コマンド送信
             	System.out.println("location");
@@ -119,7 +184,6 @@ public class APIListener {
         }
         if(TickTimer/INTERVAL == 10) {
         	TickTimer = 0;
-        	EntityPlayer player = mc.thePlayer;
             if (player != null) {
             	//コマンド送信
             	System.out.println("player");
@@ -134,9 +198,29 @@ public class APIListener {
         	}
         }
     }
+    
+    private static void sendchat(final String text,final EntityPlayerSP thePlayer) {
+    	if (Minecraft.getMinecraft().thePlayer != null) {
+            Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(text));
+        }
+    }
+    
+    private static void sendClickableLink(final String url) {
+    	
+        IChatComponent component = new ChatComponentText(url);
 
+        ChatStyle style = new ChatStyle();
+        
+        ClickEvent clickEvent = new ClickEvent(ClickEvent.Action.OPEN_URL, url);
+        style.setChatClickEvent(clickEvent);
+        
+        style.setColor(EnumChatFormatting.AQUA); // 水色にする
+        style.setUnderlined(true); // 下線を引く
 
-    public static String getother() {
-        return latestData;
+        component.setChatStyle(style);
+
+        if (Minecraft.getMinecraft().thePlayer != null) {
+            Minecraft.getMinecraft().thePlayer.addChatMessage(component);
+        }
     }
 }

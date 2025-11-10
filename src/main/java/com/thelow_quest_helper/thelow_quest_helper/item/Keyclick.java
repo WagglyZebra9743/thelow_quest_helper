@@ -7,6 +7,7 @@ import java.util.regex.Pattern;
 import org.lwjgl.input.Keyboard;
 
 import com.thelow_quest_helper.thelow_quest_helper.chat.APIListener;
+import com.thelow_quest_helper.thelow_quest_helper.clanquest.ClanQuestHUD;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
@@ -18,9 +19,9 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 
 public class Keyclick {
-	Minecraft mc = Minecraft.getMinecraft();
+	final Minecraft mc = Minecraft.getMinecraft();
 	//クリックしたことを記録するための変数
-	private static boolean wkeyClicked = false;
+	private static boolean fkeyClicked = false;
 	private static boolean zkeyClicked = false;
 	//目的地の名前を別のクラスからも呼べるようにpublic
 	public static String goalname = "";
@@ -32,98 +33,28 @@ public class Keyclick {
         	return;
         }
 
-        // Wキーが押されたときの処理
-        if(Keyboard.isKeyDown(Keyboard.KEY_W)&&!wkeyClicked) {
+        // Fキーが押されたときの処理
+        if(Keyboard.isKeyDown(Keyboard.KEY_F)&&!fkeyClicked) {
         	//loreを取得する
-            List<String> lastLore = ItemHoverTracker.lastLore;
+        	final List<String> lastLore = ItemHoverTracker.lastLore;
             if (lastLore == null) return;
 
-            for (String line : lastLore) {
+            for (final String line : lastLore) {
             	//loreを一行ずつ取得してカラーコードを除去して空白を削除する
-                String clean = line.replaceAll("§.", "").trim();
-                //NPCの座標が与えられたとき
-                if(clean.contains("地上世界")) {
-                	//まず座標を(x,y,z)の形式であると仮定して取得するのを試みる
-                	Matcher matcher = Pattern.compile("\\((-?[0-9.]+), (-?[0-9.]+), (-?[0-9.]+)\\)").matcher(clean);
-                	//見つけた場合座標をそれぞれdouble(実数)として取得する
-                    if (matcher.find()) {
-                        double x = Double.parseDouble(matcher.group(1));
-                        double y = Double.parseDouble(matcher.group(2));
-                        double z = Double.parseDouble(matcher.group(3));
-                        
-                        //クエストの名前とNPCの名前を取得する
-                        String questname = ItemHoverTracker.lastQuestname;
-                        String NPCname = ItemHoverTracker.lastNPCname;
-                        
-                        //目的地に接近したときのメッセージを出すために保存
-                        goalname = NPCname;
-                        
-                        //マーカーをリセットした後に目的地マーカーを設置する
-                        MarkerRenderer.clearMarkers();
-                        MarkerRenderer.addMarker(x,y,z, questname+"\\n"+NPCname);
-                        sendchat("§a[thelow_quest_helper]§7マーカーを設置しました§e("+x+","+y+","+z+")", mc.thePlayer);
-                        
-                        //最寄りの町の情報を取得して表示する
-                        String info = Town.getNearestTownInfo(x, y, z);
-                        sendchat(info,mc.thePlayer);
-                        
-                        //キーを押した判定を取り説明文をリセットしておく(ループ防止)
-                        wkeyClicked = true;
-                        ItemHoverTracker.lastLore = null;
-                        break; // 処理が終了したのでloreの取得をやめる
-                    }
+            	final String clean = line.replaceAll("§.", "").trim();
                     //クランクエストの形式だった時
-                }else if((clean.contains("ダンジョン[")&&clean.contains("]を攻略しよう"))) {
+                if((clean.contains("ダンジョン[")&&clean.contains("]を攻略しよう"))) {
                 	//ダンジョン名を取得する
-                	String dungeonName = clean.split("\\[")[1].split("]")[0];
-                	//ダンジョン名からダンジョンの情報を取得する
-                	Dungeon d = Dungeon.getDungeonByName(dungeonName);
-                	//ダンジョンが見つからないか、座標が与えられていないならば次の行へ移行
-    				if(d==null||d.x==null||d.y==null||d.z==null)return;
-    				
-    				//マーカーをリセットした後に目的地マーカーを設置する
-    				MarkerRenderer.clearMarkers();
-    				MarkerRenderer.addMarker(d.x,d.y,d.z,d.name);
-    				
-    				sendchat("§a[thelow_quest_helper]§7マーカーを設置しました§e("+d.x+","+d.y+","+d.z+")",mc.thePlayer);
-    				
-    				//目的地に接近したときのメッセージを出すために保存
-    				goalname = d.name;
-    				
-    				//最寄りの町の情報を取得して表示する
-    				String info = Town.getNearestTownInfo(d.x, d.y, d.z);
-    				sendchat(info,mc.thePlayer);
-    				
-    				//キーを押した判定を取り説明文をリセットしておく(ループ防止)
-    				wkeyClicked = true;
-    				ItemHoverTracker.lastLore = null;
-    				break;//処理が完了したのでloreの取得をやめる
-    				
-    				//ダンジョン攻略クエストやダンジョン攻略実績にありそうな単語
-                }else if((clean.contains("攻略する")||(clean.contains("クリア")&&!clean.contains("クリア条件")))) {
-                	//ダンジョン名が明記されるときは○○を攻略するとなってることが多い
-                	//をの前の部分をダンジョンの名前だと考えて取得する
-                	if(!clean.contains("を"))return;
-                	String dungeonName = clean.split("を")[0];
-                	//ダンジョン名からダンジョンの情報を取得する
-                	Dungeon d = Dungeon.getDungeonByName(dungeonName);
-                	//ダンジョンが見つからないか、座標が与えられていないならば次の行へ移行
-                	if(d==null||d.x==null||d.y==null||d.z==null)return;
+                	final String dungeonName = GetClanQuestDungeonName(clean);
+                	if(dungeonName==null)continue;
                 	
-                	//マーカーをリセットした後に目的地マーカーを設置する
-    				MarkerRenderer.clearMarkers();
-    				MarkerRenderer.addMarker(d.x,d.y,d.z,d.name);
-    				sendchat("§a[thelow_quest_helper]§7マーカーを設置しました§e("+d.x+","+d.y+","+d.z+")",mc.thePlayer);
+                	final boolean isForcusd = ClanQuestHUD.ForcusTheQuest(dungeonName);
+                	if(!isForcusd)continue;
     				
-    				//最寄りの町の情報を取得して表示する
-    				String info = Town.getNearestTownInfo(d.x, d.y, d.z);
-    				sendchat(info,mc.thePlayer);
-    				
-    				//目的地に接近したときのメッセージを出すために保存
-    				goalname = d.name;
+    				sendchat("§a[thelow_quest_helper]§7このクランクエストにフォーカスしました",mc.thePlayer);
     				
     				//キーを押した判定を取り説明文をリセットしておく(ループ防止)
-    				wkeyClicked = true;
+    				fkeyClicked = true;
     				ItemHoverTracker.lastLore = null;
     				break;//処理が完了したのでloreの取得をやめる
                 }
@@ -134,12 +65,12 @@ public class Keyclick {
             List<String> lastLore = ItemHoverTracker.lastLore;
             if (lastLore == null) return;
 
-            for (String line : lastLore) {
+            for (final String line : lastLore) {
             	//loreを一行ずつ取得してカラーコードを除去して空白を削除する
-                String clean = line.replaceAll("§.", "").trim();
+            	final String clean = line.replaceAll("§.", "").trim();
                 
                 //現在のプレイヤーの座標をそれぞれ取得する
-                int x1 = getPlayerBlockPos().getX(), y1 = getPlayerBlockPos().getY(), z1 = getPlayerBlockPos().getZ();
+                final int x1 = getPlayerBlockPos().getX(), y1 = getPlayerBlockPos().getY(), z1 = getPlayerBlockPos().getZ();
                 
                 //ルート情報をリセットする
                 String[] routeInfo = null;
@@ -148,7 +79,7 @@ public class Keyclick {
                 //NPCの座標が与えられたとき
                 if(clean.contains("地上世界")) {
                 	//まず座標を(x,y,z)の形式であると仮定して取得するのを試みる
-                	Matcher matcher = Pattern.compile("\\((-?[0-9.]+), (-?[0-9.]+), (-?[0-9.]+)\\)").matcher(clean);
+                	final Matcher matcher = Pattern.compile("\\((-?[0-9.]+), (-?[0-9.]+), (-?[0-9.]+)\\)").matcher(clean);
                 	//見つけた場合座標をそれぞれdouble(実数)として取得する
                     if (matcher.find()) {
                     	int x = (int) Double.parseDouble(matcher.group(1));
@@ -156,7 +87,7 @@ public class Keyclick {
                     	int z =  (int) Double.parseDouble(matcher.group(3));
                         
                     	//NPCの名前を取得して目的地の名前として保存
-                        String NPCname = ItemHoverTracker.lastNPCname;
+                    	final String NPCname = ItemHoverTracker.lastNPCname;
                         goalname = NPCname;
                         
                         //経路情報を取得する
@@ -183,11 +114,12 @@ public class Keyclick {
                 //クランクエストの形式だった時
                 }else if(clean.contains("ダンジョン[")&&clean.contains("]を攻略しよう")) {
                 	//ダンジョン名を取得する
-                	String dungeonName = clean.split("\\[")[1].split("]")[0];
+                	final String dungeonName = GetClanQuestDungeonName(clean);
+                	if(dungeonName==null)continue;
                 	//ダンジョン名からダンジョン情報を取得する
-                	Dungeon d = Dungeon.getDungeonByName(dungeonName);
+                	final Dungeon d = Dungeon.getDungeonByName(dungeonName);
                 	//ダンジョン名が見つからないか座標が与えられていなければ次の行へ移行
-    				if(d==null||d.x==null||d.y==null||d.z==null)return;
+    				if(d==null||d.x==null||d.y==null||d.z==null)continue;
     				
     				//目的地に接近したときのメッセージを出すために保存
     				goalname=d.name;
@@ -217,12 +149,12 @@ public class Keyclick {
                 }else if((clean.contains("攻略する")||(clean.contains("クリア")&&!clean.contains("クリア条件")))) {
                 	//ダンジョン名が明記されているときは○○を攻略するとなっていることが多い
                 	//をの前の部分をダンジョンの名前だと考えて取得する
-                	if(!clean.contains("を"))return;
+                	if(!clean.contains("を"))continue;
                 	String dungeonName = clean.split("を")[0];
                 	//ダンジョン名からダンジョン情報を取得する
                 	Dungeon d = Dungeon.getDungeonByName(dungeonName);
                 	//ダンジョンが見つからないか、座標が与えられていないならば次の行へ移行
-                	if(d==null||d.x==null||d.y==null||d.z==null)return;
+                	if(d==null||d.x==null||d.y==null||d.z==null)continue;
     				
                 	//目的地に接近したときのメッセージを出すために保存
                 	goalname=d.name;
@@ -250,24 +182,35 @@ public class Keyclick {
                 }
             }
             
-            //WもZも押していないときは押した判定をリセットする
-        }else if(!Keyboard.isKeyDown(Keyboard.KEY_W)&&!Keyboard.isKeyDown(Keyboard.KEY_Z)) {
-        	wkeyClicked = false;
+            //FもZも押していないときは押した判定をリセットする
+        }else if(!Keyboard.isKeyDown(Keyboard.KEY_F)&&!Keyboard.isKeyDown(Keyboard.KEY_Z)) {
+        	fkeyClicked = false;
         	zkeyClicked = false;
         }
     }
     
     //プレイヤーの座標を取得するメソッド
     public static BlockPos getPlayerBlockPos() {
-        EntityPlayer player = Minecraft.getMinecraft().thePlayer;
+    	final EntityPlayer player = Minecraft.getMinecraft().thePlayer;
         if (player != null) {
             return player.getPosition();
         }
         return null;
     }
     
-    private static void sendchat(String text,EntityPlayerSP thePlayer) {
+    private static void sendchat(final String text,final EntityPlayerSP thePlayer) {
     	Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(text));
-    	
+    }
+    
+    private static String GetClanQuestDungeonName(String DungeonNameText) {
+    	if(DungeonNameText==null||!DungeonNameText.contains("ダンジョン[")||!DungeonNameText.contains("]を攻略しよう"))return null;
+    	final String dungeonnametext = DungeonNameText;
+    	final Matcher matcher = Pattern.compile("ダンジョン\\[(.*)\\]を攻略しよう").matcher(dungeonnametext);
+    	if (matcher.find()) {
+            // (.*) にマッチした部分（キャプチャグループの1番目）を返す
+            return matcher.group(1).trim();
+        }
+    	final String dungeonname = dungeonnametext.replaceAll("§.", "").replaceAll("ダンジョン\\[","").replaceAll("\\]を攻略しよう", "").trim();
+    	return dungeonname;
     }
 }

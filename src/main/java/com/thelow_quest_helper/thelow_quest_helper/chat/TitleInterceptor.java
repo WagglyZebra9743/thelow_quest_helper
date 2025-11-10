@@ -32,7 +32,7 @@ public class TitleInterceptor {
         
         if (titleField != null) {
             try {
-                String title = (String) titleField.get(mc.ingameGUI);
+            	final String title = (String) titleField.get(mc.ingameGUI);
                 if (title != null && !title.isEmpty() && !lasttitle.contains(title)&&MarkerRenderer.IsThereMarker()&&APIListener.can_cmd_send) {
                 	mc.thePlayer.sendChatMessage("/thelow_api location");
                 	APIListener.can_cmd_send=false;

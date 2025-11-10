@@ -20,7 +20,9 @@ public class BestTeleport_mtb {
 	// Matatabi から移植した最良テレポート手段を返すクラス
     public static class TeleportPoint {
         String name;
-        int x, y, z;
+        public int x;
+		public int y;
+		public int z;
         String groupName;
         
         //コンストラクターの定義

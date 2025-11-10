@@ -6,17 +6,25 @@ import java.time.format.DateTimeFormatter;
 
 public class time_creater {
 
-	public static String operation(int timemin) {
+	public static String operation(final int timemin) {
 		if(timemin==0) return "まもなく";
 		//今の時刻に対してtimemin分加算したときの時間をStringとして取得
-		 String FutureTime = LocalDateTime.now().plus(Duration.ofMinutes(timemin)).format(DateTimeFormatter.ofPattern("MM月dd日 HH:mm"));
+		final String FutureTime = LocalDateTime.now().plus(Duration.ofMinutes(timemin)).format(DateTimeFormatter.ofPattern("MM月dd日 HH:mm"));
 		
+		 String timetext = createtimetext(timemin);
+		 
+		 if(timetext==null||timetext.isEmpty())return null;
+		 
+	     timetext = timetext + FutureTime;
+	     return timetext;
+	}
+	public static String createtimetext(int timemin) {
 		 //一日は1440分
-		 int timeday = timemin / 1440;
+		 final int timeday = timemin / 1440;
 		 //その余りは一日に満たさなかった部分
 		 timemin %= 1440;
 		 //一時間は60分
-		 int timehour = timemin / 60;
+		 final int timehour = timemin / 60;
 		 //その余りは一時間にも満たなかった部分
 		 timemin %= 60;
 		 
@@ -35,10 +43,6 @@ public class time_creater {
 		 }
 		 
 		 if(text==null||text.isEmpty())return null;
-		 
-	     text = text + FutureTime;
-	     return text;
-	     
-		
+		 return text;
 	}
 }
