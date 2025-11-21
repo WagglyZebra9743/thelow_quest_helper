@@ -27,7 +27,7 @@ import net.minecraftforge.fml.common.ModMetadata;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
-@Mod(modid = "thelow_quest_helper", version = "1.4",guiFactory = "com.thelow_quest_helper.thelow_quest_helper.config.GuiFactory")
+@Mod(modid = "thelow_quest_helper", version = "1.5",guiFactory = "com.thelow_quest_helper.thelow_quest_helper.config.GuiFactory")
 public class thelow_quest_helper {
 	public static boolean enable = true;
 	public static String MOD_ID;

@@ -42,7 +42,6 @@ public class APIListener {
     	final String msg = event.message.getUnformattedText();
     	final String colormsg = event.message.getFormattedText();
     	if(!version_Checked&&thelow_quest_helperConfig.AutoVersionCheck&&colormsg.startsWith("§r§a倉庫データを取得しました")) {
-    		SendVersionText();
     		SendVersionTimer = 40;
         }
         
