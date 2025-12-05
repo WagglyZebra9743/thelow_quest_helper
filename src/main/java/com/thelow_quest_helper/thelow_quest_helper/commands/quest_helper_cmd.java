@@ -3,6 +3,7 @@ package com.thelow_quest_helper.thelow_quest_helper.commands;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.thelow_quest_helper.thelow_quest_helper.LongQuest.LongQuestMarker;
 import com.thelow_quest_helper.thelow_quest_helper.item.MarkerRenderer;
 
 import net.minecraft.client.Minecraft;
@@ -42,6 +43,7 @@ public class quest_helper_cmd extends CommandBase {
         switch (sub.toLowerCase()) {
         	case "clearmarker":{
         		MarkerRenderer.clearMarkers();
+        		LongQuestMarker.clearMarkers();
         		sendmsg("§a[thelow_quest_helper]§7マーカーを削除しました" , sender);
         		break;
         	}

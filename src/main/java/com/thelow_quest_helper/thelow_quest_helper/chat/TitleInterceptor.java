@@ -2,6 +2,7 @@ package com.thelow_quest_helper.thelow_quest_helper.chat;
 
 import java.lang.reflect.Field;
 
+import com.thelow_quest_helper.thelow_quest_helper.LongQuest.LongQuest;
 import com.thelow_quest_helper.thelow_quest_helper.item.MarkerRenderer;
 
 import net.minecraft.client.Minecraft;
@@ -14,12 +15,14 @@ public class TitleInterceptor {
     private static final Minecraft mc = Minecraft.getMinecraft();
 
     private static Field titleField;
-    
+    private static Field subtitleField;
 
     static {
         try {
             titleField = GuiIngame.class.getDeclaredField("field_175201_x"); // obfuscated name in 1.8.9
             titleField.setAccessible(true);
+            subtitleField = GuiIngame.class.getDeclaredField("field_175200_y");
+            subtitleField.setAccessible(true);
         } catch (Exception e) {
             System.err.println("[thelow_quest_helper] タイトルフィールド取得に失敗しました: " + e.getMessage());
         }
@@ -30,17 +33,23 @@ public class TitleInterceptor {
     public void onRender(RenderGameOverlayEvent.Post event) {
         if (event.type != RenderGameOverlayEvent.ElementType.ALL) return;
         
-        if (titleField != null) {
-            try {
-            	final String title = (String) titleField.get(mc.ingameGUI);
-                if (title != null && !title.isEmpty() && !lasttitle.contains(title)&&MarkerRenderer.IsThereMarker()&&APIListener.can_cmd_send) {
-                	mc.thePlayer.sendChatMessage("/thelow_api location");
-                	APIListener.can_cmd_send=false;
-                    lasttitle = title;
-                }
-            } catch (Exception e) {
-                System.err.println("[thelow_quest_helper] タイトル取得に失敗しました: " + e.getMessage());
+        if(titleField==null)return;
+        
+        try {
+          	final String title = (String) titleField.get(mc.ingameGUI);
+          	if(title==null||title.isEmpty()||lasttitle.equals(title))return;
+          	lasttitle = title;
+            if (MarkerRenderer.IsThereMarker()&&APIListener.can_cmd_send) {
+            	mc.thePlayer.sendChatMessage("/thelow_api location");
+            	APIListener.can_cmd_send=false;
             }
+            if(subtitleField==null)return;
+            final String subtitle = (String) subtitleField.get(mc.ingameGUI);
+            if(subtitle==null||subtitle.isEmpty())return;
+            final String title_and_subtitle = title + ":" + subtitle;
+            LongQuest.UpdatePhaseByTitle(title_and_subtitle);
+        } catch (Exception e) {
+            System.err.println("[thelow_quest_helper] タイトル取得に失敗しました: " + e.getMessage());
         }
     }
 	public static String GetTitle() {
