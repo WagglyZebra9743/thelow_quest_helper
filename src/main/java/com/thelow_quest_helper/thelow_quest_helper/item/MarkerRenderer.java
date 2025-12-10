@@ -7,13 +7,10 @@ import javax.vecmath.Vector3d;
 
 import org.lwjgl.opengl.GL11;
 
-import com.thelow_quest_helper.thelow_quest_helper.chat.APIListener;
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.entity.RenderManager;
-import net.minecraft.util.BlockPos;
 import net.minecraft.util.ChatComponentText;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -48,7 +45,6 @@ public class MarkerRenderer {
     @SubscribeEvent
     public void onRenderWorld(RenderWorldLastEvent event) {
     	
-    	
     	//マーカーが有効から無効になったか、無効から有効になったかでメッセージ分岐
     	if (marker_enable != current_enable) {
     	    if (marker_enable) {
@@ -63,27 +59,7 @@ public class MarkerRenderer {
     	    }
     	    current_enable = marker_enable; // 状態を更新
     	}
-    	
-    	if(!marker_enable&&APIListener.gasya&&APIListener.can_cmd_send) {
-    		final BlockPos blockpos = Keyclick.getPlayerBlockPos();
-    		final int x1 = blockpos.getX(),y1=blockpos.getY(),z1=blockpos.getZ();
-    		if(x1==-1253&&y1==85&&z1==-973){
-    			mc.thePlayer.sendChatMessage("/thelow_api location");
-    			APIListener.gasya = false;
-    			APIListener.can_cmd_send=false;
-    		}
-    	}
-    	
-    	//飛空艇の移動先座標でリセット
-    	if(!marker_enable&&APIListener.can_cmd_send) {
-    		final BlockPos blockpos = Keyclick.getPlayerBlockPos();
-    		final int x1 = blockpos.getX(),y1=blockpos.getY(),z1=blockpos.getZ();
-    		if((x1==-150&&y1==184&&z1==1293)||(x1==1319&&y1==127&&z1==-929)||(x1==-935&&y1==102&&z1==1142)||(x1==-1127&&y1==128&&z1==-794)||(x1==-37&&y1==128&&z1==909)||(x1==-382&&y1==101&&z1==-1265)||(x1==-463&&y1==152&&z1==-608)){
-    			mc.thePlayer.sendChatMessage("/thelow_api location");
-    			APIListener.can_cmd_send=false;
-    		}
-    	}
-    	
+
     	//マーカーが無効なら表示しない
     	if(!marker_enable)return;
     	

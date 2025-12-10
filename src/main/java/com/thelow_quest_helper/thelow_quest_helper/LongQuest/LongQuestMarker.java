@@ -12,6 +12,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.entity.RenderManager;
+import net.minecraft.util.ChatComponentText;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
@@ -19,28 +20,56 @@ public class LongQuestMarker {
 	
     // 内部で使用するデータ構造
     private static class Point {
-        Vector3d pos;
-        String label;
-        String ID;
+        final Vector3d pos;
+        final String label;
+        final String ID;
+        final Color color;
         
-        Point(Vector3d pos, String label,String ID) {
+        Point(final Vector3d pos, final String label,final String ID,final String color) {
         	this.pos = pos;
         	this.label = label;
         	this.ID = ID;
+        	if(color!=null&&color.equals("yellow")) {
+        		this.color = yellow;
+        		return;
+        	}
+        	this.color = gold;
         }
 	}
-	    
+	 
+
+    private static class Color{
+		final float R;
+		final float G;
+		final float B;
+		final float Alpha;
+		Color(final float R,final float G,final float B,final float Alpha){
+			this.R = R;
+			this.G = G;
+			this.B = B;
+			this.Alpha = Alpha;
+		}
+	}
     // マーカーのリスト
 	private static final List<Point> points = new ArrayList<>();
 	
 	// 削除判定を行う距離 (ブロック単位)
 	private static final double REMOVE_DISTANCE = 10.0;
+	
+	//色を定義
+	private static final Color gold = new Color(1.0f, 0.67f, 0.0f, 0.5f);
+	private static final Color yellow = new Color(1.0f, 1.0f, 0.0f, 0.5f);
 	    
 	private final Minecraft mc = Minecraft.getMinecraft();
 	
-	//マーカーを追加する
+	//通常のクエスト用マーカーを追加する
 	public static void addMarker(final double x, final double y, final double z, final String label,final String ID) {
-		points.add(new Point(new Vector3d(x, y, z), label,ID));
+		points.add(new Point(new Vector3d(x, y, z), label,ID,"gold"));
+	}
+	
+	//色違いのサブ用マーカー
+	public static void addSubMarker(final double x, final double y, final double z, final String label,final String ID) {
+		points.add(new Point(new Vector3d(x, y, z), label,ID,"yellow"));
 	}
 	    
 	//マーカーをクリアする
@@ -55,9 +84,8 @@ public class LongQuestMarker {
 		while (iterator.hasNext()) {
 			final Point p = iterator.next();
 			final String ThePID = p.ID;
-			if(ID.equals(ThePID)) {
+			if(ThePID!=null&&ThePID.startsWith(ID)) {
 				iterator.remove();
-				return;
 			}
 		}
 	}
@@ -87,6 +115,7 @@ public class LongQuestMarker {
 			
 			//近づいたら消す
 			if (distance < REMOVE_DISTANCE) {
+				if(!p.label.startsWith("§6[Quest]"))mc.thePlayer.addChatMessage(new ChatComponentText("§a[thelow_quest_helper]§f"+p.label+"§7に近づいたのでマーカーを削除しました"));
 				// リストから削除
 				iterator.remove();
 				continue; // 削除したので描画処理はスキップして次のマーカーへ
@@ -124,8 +153,8 @@ public class LongQuestMarker {
 			// マーカー本体(四角形)の描画
 			GL11.glDisable(GL11.GL_TEXTURE_2D);
 			
-			// §6 (ゴールド/オレンジ) の色設定 (R=1.0, G=0.67, B=0.0, Alpha=0.5)
-			GL11.glColor4f(1.0f, 0.67f, 0.0f, 0.5f);
+			// 色を可変にした
+			GL11.glColor4f(p.color.R,p.color.G,p.color.B,p.color.Alpha);
 			
 			GL11.glBegin(GL11.GL_QUADS);
 			GL11.glVertex3d(-1, 1, 0);
@@ -138,7 +167,7 @@ public class LongQuestMarker {
 			GL11.glColor4f(1f, 1f, 1f, 1f);
 			
 			// テキストラベルの描画
-			final String[] lines = p.label.split("\\\\n");
+			final String[] lines = p.label.split("\n");
 			FontRenderer font = mc.fontRendererObj;
 			
 			GlStateManager.pushMatrix();
@@ -158,5 +187,10 @@ public class LongQuestMarker {
 			GlStateManager.enableDepth();
 			GlStateManager.popMatrix();
 		}
+	}
+	
+	public static boolean IsThereMarker() {
+		if(points == null||points.isEmpty())return false;
+		return true;
 	}
 }

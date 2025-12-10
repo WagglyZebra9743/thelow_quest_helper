@@ -13,7 +13,6 @@ import com.google.gson.JsonSyntaxException;
 import com.thelow_quest_helper.thelow_quest_helper.LongQuest.LongQuestHUD;
 import com.thelow_quest_helper.thelow_quest_helper.LongQuest.LongQuestMarker;
 import com.thelow_quest_helper.thelow_quest_helper.chat.APIListener;
-import com.thelow_quest_helper.thelow_quest_helper.chat.TitleInterceptor;
 import com.thelow_quest_helper.thelow_quest_helper.clanquest.ClanQuestHUD;
 import com.thelow_quest_helper.thelow_quest_helper.commands.quest_helper_cmd;
 import com.thelow_quest_helper.thelow_quest_helper.config.thelow_quest_helperConfig;
@@ -66,7 +65,6 @@ public class thelow_quest_helper {
         MinecraftForge.EVENT_BUS.register(new Keyclick());
         MinecraftForge.EVENT_BUS.register(new MarkerRenderer());
         MinecraftForge.EVENT_BUS.register(new APIListener());
-        MinecraftForge.EVENT_BUS.register(new TitleInterceptor());
         MinecraftForge.EVENT_BUS.register(new ClanQuestHUD());
         MinecraftForge.EVENT_BUS.register(new LongQuestHUD());
         MinecraftForge.EVENT_BUS.register(new LongQuestMarker());

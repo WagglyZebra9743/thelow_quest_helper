@@ -80,7 +80,7 @@ public class ItemHoverTracker {
     			for(String text1 : texts) {
    					tooltip.add("§7" + text1.replace("\n", ""));
    				}
-    			//tooltip.add("§a[W]キーでマーカーを設置できます");
+    			tooltip.add("§a[M]キーでマーカーを設置できます");
     			tooltip.add("§a[Z]キーでルート案内を開始します");
     			tooltip.add("§a[F]キーでこのクエストにフォーカスします");
             }
@@ -99,7 +99,7 @@ public class ItemHoverTracker {
                 				lastQuestname = display.getString("Name");
                 				lastNPCname = clean.split(" : ")[0];
                 			}
-                            //tooltip.add("§a[W]キーでマーカーを設置できます");
+                            tooltip.add("§a[M]キーでマーカーを設置できます");
                             tooltip.add("§a[Z]キーでルート案内を開始します");
                             break;
                         }
@@ -117,7 +117,7 @@ public class ItemHoverTracker {
         				for(final String text1 : texts) {
         					tooltip.add("§7" + text1.replace("\n",""));
         				}
-        				//tooltip.add("§a[W]キーでマーカーを設置できます");
+        				tooltip.add("§a[M]キーでマーカーを設置できます");
         				tooltip.add("§a[Z]キーでルート案内を開始します");
         				break;
             		}
