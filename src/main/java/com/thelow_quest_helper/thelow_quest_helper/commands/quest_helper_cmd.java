@@ -102,6 +102,7 @@ public class quest_helper_cmd extends CommandBase {
         	
             case "longreset":
             	LongQuest.ClearPhaseStats();
+        		LongQuestMarker.clearMarkers();
             	sendmsg("§a[thelow_quest_helper]§7ストーリークエスト情報をリセットしました",sender);
             	break;
             	
@@ -160,5 +161,40 @@ public class quest_helper_cmd extends CommandBase {
     
     private void sendmsg(final String msg , final ICommandSender sender) {
     	sender.addChatMessage(new ChatComponentText(msg));
+    }
+    
+    public static class GenericAlias extends CommandBase {
+        private final String aliasName;
+        private final String originalCommand;
+
+        public GenericAlias(String aliasName, String originalCommand) {
+            this.aliasName = aliasName;
+            this.originalCommand = originalCommand;
+        }
+
+        @Override
+        public String getCommandName() {
+            return this.aliasName; // 例: "cq"
+        }
+
+        @Override
+        public String getCommandUsage(ICommandSender sender) {
+            return "/" + this.aliasName;
+        }
+
+        @Override
+        public void processCommand(ICommandSender sender, String[] args) {
+            mc.thePlayer.sendChatMessage(this.originalCommand);
+        }
+
+        @Override
+        public boolean canCommandSenderUseCommand(ICommandSender sender) {
+            return true; // 権限レベルに関係なく使用可能
+        }
+
+        @Override
+        public int getRequiredPermissionLevel() {
+            return 0; // クライアントコマンドなので0
+        }
     }
 }

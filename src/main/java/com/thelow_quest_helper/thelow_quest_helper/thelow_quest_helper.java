@@ -69,6 +69,8 @@ public class thelow_quest_helper {
         MinecraftForge.EVENT_BUS.register(new LongQuestHUD());
         MinecraftForge.EVENT_BUS.register(new LongQuestMarker());
         ClientCommandHandler.instance.registerCommand(new quest_helper_cmd());
+        ClientCommandHandler.instance.registerCommand(new quest_helper_cmd.GenericAlias("cq", "/clan quest"));
+        ClientCommandHandler.instance.registerCommand(new quest_helper_cmd.GenericAlias("ci", "/clan info"));
     }
     
     public void checkModVersion() {
