@@ -69,6 +69,9 @@ public class LongQuest{
 	public static void ClearPhaseStats() {
 		for(LongQuest TheLongQuest : LongQuestList) {
 			TheLongQuest.QuestPhase = new boolean[TheLongQuest.QuestPhase.length];
+			for(final ThePhase ThePhase : TheLongQuest.QuestList) {
+				RemovePhaseMarker(TheLongQuest,ThePhase);
+			}
 		}
 	}
 	

@@ -7,6 +7,8 @@ import javax.vecmath.Vector3d;
 
 import org.lwjgl.opengl.GL11;
 
+import com.thelow_quest_helper.thelow_quest_helper.LongQuest.LongQuestMarker;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.GlStateManager;
@@ -48,11 +50,11 @@ public class MarkerRenderer {
     	//マーカーが有効から無効になったか、無効から有効になったかでメッセージ分岐
     	if (marker_enable != current_enable) {
     	    if (marker_enable) {
-    	        if(markers!=null&&!markers.isEmpty()) {
+    	        if((markers!=null&&!markers.isEmpty())||(LongQuestMarker.points!=null&&!LongQuestMarker.points.isEmpty())) {
     	        	mc.thePlayer.addChatMessage(new ChatComponentText("§a[thelow_quest_helper]§7マーカーが有効化されました"));
     	        }
     	    } else {
-    	    	if(markers!=null&&!markers.isEmpty()) {
+    	    	if((markers!=null&&!markers.isEmpty())||(LongQuestMarker.points!=null&&!LongQuestMarker.points.isEmpty())) {
     	    		mc.thePlayer.addChatMessage(new ChatComponentText("§a[thelow_quest_helper]§7マーカーが一時的に無効化されました"));
     	    		mc.thePlayer.addChatMessage(new ChatComponentText("§7地上ワールドでのみ有効です"));
     	    	}

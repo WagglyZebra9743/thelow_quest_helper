@@ -184,7 +184,7 @@ public class Keyclick {
                     	final String NPCname = ItemHoverTracker.lastNPCname;
                         
                     	LongQuestMarker.RemoveMarkerByID("destination");
-                    	LongQuestMarker.addMarker(x, y, z, NPCname, "destination");
+                    	LongQuestMarker.addSubMarker(x, y, z, NPCname, "destination");
                         //目的地へのルート案内開始と予定ルートを表示
                         sendchat("§a[thelow_quest_helper]§f"+NPCname+"§7にマーカーを設置しました");
                         
@@ -204,7 +204,7 @@ public class Keyclick {
                 	//ダンジョン名が見つからないか座標が与えられていなければ次の行へ移行
     				if(d==null||d.x==null||d.y==null||d.z==null)continue;
     				LongQuestMarker.RemoveMarkerByID("destination");
-                	LongQuestMarker.addMarker(d.x, d.y, d.z, d.name, "destination");
+                	LongQuestMarker.addSubMarker(d.x, d.y, d.z, d.name, "destination");
     				
     				//目的地へのルート案内開始と予定ルートを表示
     				sendchat("§a[thelow_quest_helper]§f"+d.name+"§7にマーカーを設置しました");
@@ -226,7 +226,7 @@ public class Keyclick {
                 	//ダンジョンが見つからないか、座標が与えられていないならば次の行へ移行
                 	if(d==null||d.x==null||d.y==null||d.z==null)continue;
                 	LongQuestMarker.RemoveMarkerByID("destination");
-                	LongQuestMarker.addMarker(d.x, d.y, d.z, d.name, "destination");
+                	LongQuestMarker.addSubMarker(d.x, d.y, d.z, d.name, "destination");
     				//目的地へのルート案内開始と予定ルートを表示
     				sendchat("§a[thelow_quest_helper]§f"+d.name+"§7にマーカーを設置しました");
                     
