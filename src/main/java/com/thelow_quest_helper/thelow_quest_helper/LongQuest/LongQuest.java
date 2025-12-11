@@ -68,8 +68,7 @@ public class LongQuest{
 	
 	public static void ClearPhaseStats() {
 		for(LongQuest TheLongQuest : LongQuestList) {
-			boolean[] TheStates = TheLongQuest.QuestPhase;
-			TheStates = new boolean[TheStates.length];
+			TheLongQuest.QuestPhase = new boolean[TheLongQuest.QuestPhase.length];
 		}
 	}
 	

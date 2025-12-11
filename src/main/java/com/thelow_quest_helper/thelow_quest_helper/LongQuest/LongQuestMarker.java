@@ -8,6 +8,8 @@ import javax.vecmath.Vector3d;
 
 import org.lwjgl.opengl.GL11;
 
+import com.thelow_quest_helper.thelow_quest_helper.item.MarkerRenderer;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.GlStateManager;
@@ -95,6 +97,25 @@ public class LongQuestMarker {
 	public void onRenderWorld(RenderWorldLastEvent event) {
 		// マーカーがなければ何もしない
 		if (points.isEmpty()) return;
+		
+		if(!MarkerRenderer.IsThereMarker()) {
+			//マーカーが有効から無効になったか、無効から有効になったかでメッセージ分岐
+	    	if (MarkerRenderer.marker_enable != MarkerRenderer.current_enable) {
+	    	    if (MarkerRenderer.marker_enable) {
+	    	        if(points!=null&&!points.isEmpty()) {
+	    	        	mc.thePlayer.addChatMessage(new ChatComponentText("§a[thelow_quest_helper]§7マーカーが有効化されました"));
+	    	        }
+	    	    } else {
+	    	    	if(points!=null&&!points.isEmpty()) {
+	    	    		mc.thePlayer.addChatMessage(new ChatComponentText("§a[thelow_quest_helper]§7マーカーが一時的に無効化されました"));
+	    	    		mc.thePlayer.addChatMessage(new ChatComponentText("§7地上ワールドでのみ有効です"));
+	    	    	}
+	    	    }
+	    	    MarkerRenderer.current_enable = MarkerRenderer.marker_enable; // 状態を更新
+	    	}
+		}
+		
+		if(!MarkerRenderer.marker_enable)return;
 		
 		final RenderManager rm = mc.getRenderManager();
 		if (rm == null) return;

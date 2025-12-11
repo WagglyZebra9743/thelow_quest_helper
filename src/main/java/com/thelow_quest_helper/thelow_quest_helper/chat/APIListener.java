@@ -60,15 +60,12 @@ public class APIListener {
                 	final String apiType = json.get("apiType").getAsString();
                     if("location".equals(apiType)) {
                     	final JsonObject response = json.getAsJsonObject("response");
-                    	if(response.has("worldName"))return;
+                    	if(!response.has("worldName"))return;
                     	final String worldName = response.get("worldName").getAsString();
                         if(worldName.equals("thelow")) {
                         	MarkerRenderer.marker_enable = true;
-                        	gasya=false;
                         }else {
-                        	if(!gasya) {
-                        		MarkerRenderer.marker_enable = false;
-                        	}
+                        	MarkerRenderer.marker_enable = false;
                         }
                     }
                     if("player_status".equals(apiType)) {

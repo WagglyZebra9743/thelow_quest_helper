@@ -56,9 +56,8 @@ public class LongQuestHUD {
 		}
 		
 		if(!CanGetQuestList)return;
-		CanGetQuestList = false;
+		if(!ContainerHasItem(container))return;
 		LongQuest.ClearPhaseStats();
-		
 	    for (int i=0;i<27;i++) {
 		    if (i >= container.inventorySlots.size()) break;
 		    
@@ -79,6 +78,8 @@ public class LongQuestHUD {
 		    final String questid = GetQuestIDline(lore);
 		    LongQuest.CheckPhaseByID(questid);
         }
+	    
+	    CanGetQuestList = false;
     }
 	
 	private static boolean ChecktheContainerIsQuestList(Container container) {
@@ -89,6 +90,15 @@ public class LongQuestHUD {
 		
 		if (!guiTitle.startsWith("QUEST VIEWER")) return false;
 		return true;
+	}
+	
+	private static boolean ContainerHasItem(Container container) {
+		for (int i = 0; i < 27 && i < container.inventorySlots.size(); i++) {
+            if (container.getSlot(i).getHasStack()) {
+                return true;
+            }
+        }
+		return false;
 	}
 	
 	private static String GetQuestIDline(final List<String> lore) {

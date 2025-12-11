@@ -30,7 +30,7 @@ public class MarkerRenderer {
     private static final List<Marker> markers = new ArrayList<>();
     
     public static boolean marker_enable = true;
-    private static boolean current_enable = true;
+    public static boolean current_enable = true;
     final Minecraft mc = Minecraft.getMinecraft();
     private static int i = 0;
 
