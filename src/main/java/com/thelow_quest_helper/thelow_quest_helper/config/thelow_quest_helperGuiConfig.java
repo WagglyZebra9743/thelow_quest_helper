@@ -31,6 +31,9 @@ public class thelow_quest_helperGuiConfig extends GuiConfig {
         thelow_quest_helperConfig.ClanQuestHUDX = thelow_quest_helperConfig.getConfig().get(thelow_quest_helperConfig.CATEGORY_GENERAL, "ClanQuestHUDX", thelow_quest_helperConfig.GetClanQuestHUDplace("X")).getInt();
         thelow_quest_helperConfig.ClanQuestHUDY = thelow_quest_helperConfig.getConfig().get(thelow_quest_helperConfig.CATEGORY_GENERAL, "ClanQuestHUDY", thelow_quest_helperConfig.GetClanQuestHUDplace("Y")).getInt();
         thelow_quest_helperConfig.ClanQuestHUDenable = thelow_quest_helperConfig.getConfig().get(thelow_quest_helperConfig.CATEGORY_GENERAL, "ClanQuestHUDenable", true).getBoolean();
+        thelow_quest_helperConfig.LongQuestHUDX = thelow_quest_helperConfig.getConfig().get(thelow_quest_helperConfig.CATEGORY_GENERAL, "LongQuestHUDX", thelow_quest_helperConfig.GetLongQuestHUDplace("X")).getInt();
+        thelow_quest_helperConfig.LongQuestHUDY = thelow_quest_helperConfig.getConfig().get(thelow_quest_helperConfig.CATEGORY_GENERAL, "LongQuestHUDY", thelow_quest_helperConfig.GetLongQuestHUDplace("Y")).getInt();
+        thelow_quest_helperConfig.LongQuestEnable = thelow_quest_helperConfig.getConfig().get(thelow_quest_helperConfig.CATEGORY_GENERAL, "LongQuestEnable", true).getBoolean();
         thelow_quest_helperConfig.AutoVersionCheck = thelow_quest_helperConfig.getConfig().get(thelow_quest_helperConfig.CATEGORY_GENERAL, "AutoVersionCheck", true).getBoolean();
         thelow_quest_helperConfig.SendMCID = thelow_quest_helperConfig.getConfig().get(thelow_quest_helperConfig.CATEGORY_GENERAL, "SendMCID", false).getBoolean();
 

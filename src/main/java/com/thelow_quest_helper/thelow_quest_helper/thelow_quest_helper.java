@@ -10,8 +10,9 @@ import java.util.List;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
+import com.thelow_quest_helper.thelow_quest_helper.LongQuest.LongQuestHUD;
+import com.thelow_quest_helper.thelow_quest_helper.LongQuest.LongQuestMarker;
 import com.thelow_quest_helper.thelow_quest_helper.chat.APIListener;
-import com.thelow_quest_helper.thelow_quest_helper.chat.TitleInterceptor;
 import com.thelow_quest_helper.thelow_quest_helper.clanquest.ClanQuestHUD;
 import com.thelow_quest_helper.thelow_quest_helper.commands.quest_helper_cmd;
 import com.thelow_quest_helper.thelow_quest_helper.config.thelow_quest_helperConfig;
@@ -27,7 +28,7 @@ import net.minecraftforge.fml.common.ModMetadata;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
-@Mod(modid = "thelow_quest_helper", version = "1.4",guiFactory = "com.thelow_quest_helper.thelow_quest_helper.config.GuiFactory")
+@Mod(modid = "thelow_quest_helper", version = "1.5",guiFactory = "com.thelow_quest_helper.thelow_quest_helper.config.GuiFactory")
 public class thelow_quest_helper {
 	public static boolean enable = true;
 	public static String MOD_ID;
@@ -64,9 +65,12 @@ public class thelow_quest_helper {
         MinecraftForge.EVENT_BUS.register(new Keyclick());
         MinecraftForge.EVENT_BUS.register(new MarkerRenderer());
         MinecraftForge.EVENT_BUS.register(new APIListener());
-        MinecraftForge.EVENT_BUS.register(new TitleInterceptor());
         MinecraftForge.EVENT_BUS.register(new ClanQuestHUD());
+        MinecraftForge.EVENT_BUS.register(new LongQuestHUD());
+        MinecraftForge.EVENT_BUS.register(new LongQuestMarker());
         ClientCommandHandler.instance.registerCommand(new quest_helper_cmd());
+        ClientCommandHandler.instance.registerCommand(new quest_helper_cmd.GenericAlias("cq", "/clan quest"));
+        ClientCommandHandler.instance.registerCommand(new quest_helper_cmd.GenericAlias("ci", "/clan info"));
     }
     
     public void checkModVersion() {

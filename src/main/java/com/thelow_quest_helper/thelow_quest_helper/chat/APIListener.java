@@ -6,6 +6,7 @@ import java.util.regex.Pattern;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.thelow_quest_helper.thelow_quest_helper.thelow_quest_helper;
+import com.thelow_quest_helper.thelow_quest_helper.LongQuest.LongQuest;
 import com.thelow_quest_helper.thelow_quest_helper.config.thelow_quest_helperConfig;
 import com.thelow_quest_helper.thelow_quest_helper.item.MarkerRenderer;
 
@@ -18,6 +19,7 @@ import net.minecraft.util.ChatStyle;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.IChatComponent;
 import net.minecraftforge.client.event.ClientChatReceivedEvent;
+import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
@@ -42,9 +44,11 @@ public class APIListener {
     	final String msg = event.message.getUnformattedText();
     	final String colormsg = event.message.getFormattedText();
     	if(!version_Checked&&thelow_quest_helperConfig.AutoVersionCheck&&colormsg.startsWith("§r§a倉庫データを取得しました")) {
-    		SendVersionText();
     		SendVersionTimer = 40;
         }
+    	if(colormsg!=null&&colormsg.startsWith("§r")&&colormsg.endsWith("§r")) {
+    		LongQuest.UpdatePhaseByTitle(colormsg);
+    	}
         
         
         if (msg.startsWith("$api")) {
@@ -56,15 +60,12 @@ public class APIListener {
                 	final String apiType = json.get("apiType").getAsString();
                     if("location".equals(apiType)) {
                     	final JsonObject response = json.getAsJsonObject("response");
-                    	if(response.has("worldName"))return;
+                    	if(!response.has("worldName"))return;
                     	final String worldName = response.get("worldName").getAsString();
                         if(worldName.equals("thelow")) {
                         	MarkerRenderer.marker_enable = true;
-                        	gasya=false;
                         }else {
-                        	if(!gasya) {
-                        		MarkerRenderer.marker_enable = false;
-                        	}
+                        	MarkerRenderer.marker_enable = false;
                         }
                     }
                     if("player_status".equals(apiType)) {
@@ -104,22 +105,7 @@ public class APIListener {
     public void APIcancel(ClientChatReceivedEvent event) {
         final String message = event.message.getUnformattedText(); // 色コードや装飾を除去したテキスト
         final String colormessage = event.message.getFormattedText();
-        
-        //killとかで死んでダンジョンから出た想定
-        final String mcid = mc.thePlayer.getName();
-        if(message.contains(mcid)&&MarkerRenderer.IsThereMarker()&&APIListener.can_cmd_send) {
-        	mc.thePlayer.sendChatMessage("/thelow_api location");
-        	can_cmd_send = false;
-        }
-        //tpでダンジョンから出た想定
-        if(message.contains("テレポートしました")&&MarkerRenderer.IsThereMarker()&&APIListener.can_cmd_send) {
-        	mc.thePlayer.sendChatMessage("/thelow_api location");
-        	can_cmd_send=false;
-        }
-        
-        if(message.contains("ここに置くガチャは増えていくかもしれません。")) {
-        	gasya=true;
-        }
+
         
         if((colormessage.startsWith("§r§a")||colormessage.startsWith("§r§b[NEW RECORDING] §r§a"))&&message.contains("の攻略時間")) {
         	final Matcher matcher = Pattern.compile("§r§a(.*)の攻略時間").matcher(colormessage);
@@ -140,6 +126,14 @@ public class APIListener {
     }
     
     @SubscribeEvent
+    public void onJoinWorld(EntityJoinWorldEvent event) {
+        if (event.entity == mc.thePlayer&&can_cmd_send) {
+            mc.thePlayer.sendChatMessage("/thelow_api location");
+            can_cmd_send=false;
+        }
+    }
+    
+    @SubscribeEvent
     public void onClientTick(TickEvent.ClientTickEvent event) {
         if (event.phase == TickEvent.Phase.START)return;//TickEventはSTARTとENDの2回発火するので1回にする
         if(SendVersionTimer>0) {
@@ -150,18 +144,10 @@ public class APIListener {
         }
         if(!MarkerRenderer.IsThereMarker()) {
         	TickTimer = 0;
-        	cmd_ct=0;
-        	return;//マーカーが無いなら処理しない
         }
         final EntityPlayer player = mc.thePlayer;
         TickTimer++;//1ずつ加算
-        if (TickTimer%INTERVAL == 1) {//特定の値なら
-            if (player != null) {
-            	//コマンド送信
-            	System.out.println("location");
-                mc.thePlayer.sendChatMessage("/thelow_api location");
-            }
-        }
+
         if(TickTimer/INTERVAL == 10) {
         	TickTimer = 0;
             if (player != null) {

@@ -187,12 +187,12 @@ public class Dungeon {
     		new Dungeon("Mycelium cave", 870.0, 22.0, -1283.0),
     		new Dungeon("冥妬の洞窟：鬼哭の遺跡", 1204.0, 101.0, 172.0),
     		new Dungeon("碧の洞窟", -500.0, 42.0, 1284.0),
-    		new Dungeon("monte sub terra", -1380.0, 72.0, -745.0),
+    		new Dungeon("monte sub terra -モンテサブテラ-", -1380.0, 72.0, -745.0),
     		new Dungeon("訓練所:第3訓練室、第4訓練室", -1014.0, 69.0, 822.0),
     		new Dungeon("凍てつく鉱山", 1406.0, 70.0, -1088.0),
     		new Dungeon("森の館", -1248.0, 68.0, 33.0),
     		new Dungeon("虚空の地下", -902.0, 69.0, 1124.0),
-    		new Dungeon("メルべリアスの森", -992.0, 67.0, 239.0),//「べ」はひらがな
+    		new Dungeon("メルベリアスの森", -992.0, 67.0, 239.0),//カタカナに直ってました
     		new Dungeon("不完全な拷問所", -386.0, 130.0, 246.0),
     		new Dungeon("サンゴヴェイル",  null,  null,  null),
     		new Dungeon("紅城", -783.0, 35.0, -1156.0),
