@@ -98,7 +98,7 @@ public class Keyclick {
                 	//ダンジョン名からダンジョン情報を取得する
                 	final Dungeon d = Dungeon.getDungeonByName(dungeonName);
                 	//ダンジョン名が見つからないか座標が与えられていなければ次の行へ移行
-    				if(d==null||d.x==null||d.y==null||d.z==null)continue;
+    				if(d==null||!d.hasCoords())continue;
     				
     				//目的地に接近したときのメッセージを出すために保存
     				goalname=d.name;
@@ -133,7 +133,7 @@ public class Keyclick {
                 	//ダンジョン名からダンジョン情報を取得する
                 	final Dungeon d = Dungeon.getDungeonByName(dungeonName);
                 	//ダンジョンが見つからないか、座標が与えられていないならば次の行へ移行
-                	if(d==null||d.x==null||d.y==null||d.z==null)continue;
+                	if(d==null||!d.hasCoords())continue;
     				
                 	//目的地に接近したときのメッセージを出すために保存
                 	goalname=d.name;
@@ -202,7 +202,7 @@ public class Keyclick {
                 	//ダンジョン名からダンジョン情報を取得する
                 	final Dungeon d = Dungeon.getDungeonByName(dungeonName);
                 	//ダンジョン名が見つからないか座標が与えられていなければ次の行へ移行
-    				if(d==null||d.x==null||d.y==null||d.z==null)continue;
+    				if(d==null||!d.hasCoords())continue;
     				LongQuestMarker.RemoveMarkerByID("destination");
                 	LongQuestMarker.addSubMarker(d.x, d.y, d.z, d.name, "destination");
     				
@@ -224,7 +224,7 @@ public class Keyclick {
                 	//ダンジョン名からダンジョン情報を取得する
                 	final Dungeon d = Dungeon.getDungeonByName(dungeonName);
                 	//ダンジョンが見つからないか、座標が与えられていないならば次の行へ移行
-                	if(d==null||d.x==null||d.y==null||d.z==null)continue;
+                	if(d==null||!d.hasCoords())continue;
                 	LongQuestMarker.RemoveMarkerByID("destination");
                 	LongQuestMarker.addSubMarker(d.x, d.y, d.z, d.name, "destination");
     				//目的地へのルート案内開始と予定ルートを表示

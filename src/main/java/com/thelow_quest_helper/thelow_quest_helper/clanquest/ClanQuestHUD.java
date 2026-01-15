@@ -2,6 +2,7 @@ package com.thelow_quest_helper.thelow_quest_helper.clanquest;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 import com.thelow_quest_helper.thelow_quest_helper.chat.APIListener;
@@ -32,6 +33,7 @@ class ClanQuest{
 	public int TimeLimitMinutes;
 	public long limitTime;
 	public String Queststats;
+	public boolean Reboot;
 	
 	public ClanQuest() {
         this.QuestsDungeon = null;
@@ -39,6 +41,7 @@ class ClanQuest{
         this.TimeLimitMinutes = 0;
         this.limitTime = 0L;
         this.Queststats = "未完了";
+        this.Reboot = false;
     }
 }
 class ClanQuestDungeons{
@@ -125,7 +128,7 @@ public class ClanQuestHUD {
 	            if(lore==null)continue;
 	            
 	            //ダンジョンの名前を取得する
-	            String dungeonname = ItemHoverTracker.GetClanQuestDungeonName(display);
+	            final String dungeonname = ItemHoverTracker.GetClanQuestDungeonName(display);
 	            if(dungeonname==null)continue;
 	            
 	            //ダンジョン情報を取得する
@@ -139,6 +142,8 @@ public class ClanQuestHUD {
 	            ClanQuestIndex++;//格納場所を調整する
 	            if(dungeoninfo != null) {//ダンジョン情報があるなら格納する
 	                ClanQuestInfo.slots[ClanQuestIndex].QuestsDungeon = dungeoninfo;
+	            }else {//検索でヒットしなかったらnullで置換する
+	            	ClanQuestInfo.slots[ClanQuestIndex].QuestsDungeon = null;
 	            }
 	            //有効期限が切れる時間を取得する
 	            final long now = System.currentTimeMillis();//現在時刻を取得
@@ -152,6 +157,8 @@ public class ClanQuestHUD {
 	            ClanQuestInfo.slots[ClanQuestIndex].TimeLimitMinutes = timem;
 	            ClanQuestInfo.slots[ClanQuestIndex].limitTime  = endTime;
 	            ClanQuestInfo.slots[ClanQuestIndex].Queststats  = QuestStats;
+	          //再起動を挟むかを確認
+	            if(ClossRebootTime(timem))ClanQuestInfo.slots[ClanQuestIndex].Reboot = true;
 	            ClanQuestInfoGetTime = System.currentTimeMillis();//取得時間を変更する
 	    	}
 	        //何回も動かないようにする
@@ -236,7 +243,7 @@ public class ClanQuestHUD {
     			CanGetClanQuest = true;//取得できてないならもう一度取得しようとしてみる
     		}
     	}
-    	if(theQuest.QuestsDungeon!=null) {//ダンジョン座標があったら表示
+    	if(theQuest.QuestsDungeon!=null&&theQuest.QuestsDungeon.hasCoords()) {//ダンジョン座標があったら表示
     		font.drawStringWithShadow("("+theQuest.QuestsDungeon.x+","+theQuest.QuestsDungeon.y+","+theQuest.QuestsDungeon.z+")", Dpospos, HUDposY, 0xFFFFFF);
     	}
     	
@@ -263,7 +270,9 @@ public class ClanQuestHUD {
     	font.drawStringWithShadow(String.format("%6d分", theQuest.TimeLimitMinutes), limitpos+4, HUDposY, 0xFFFFFF);
         
         //終了予定時刻を表示
-    	font.drawStringWithShadow("("+formatter.format(theQuest.limitTime)+")", timepos+16, HUDposY, 0xFFFFFF);
+    	String RebootColor = "";
+    	if(theQuest.Reboot)RebootColor = "§c";
+    	font.drawStringWithShadow(RebootColor+"("+formatter.format(theQuest.limitTime)+")", timepos+16, HUDposY, 0xFFFFFF);
         
         //クエストが終了しているかを表示
     	font.drawStringWithShadow("("+theQuest.Queststats+")", statspos+16, HUDposY, 0xFFFFFF);
@@ -341,5 +350,34 @@ public class ClanQuestHUD {
 			}
 		}
 		return "未完了";
+	}
+	
+	private boolean ClossRebootTime(int durationMinutes) {
+	    // 1. 再起動時間を「分」に換算しておく
+	    // 0:10->10, 5:10->310, 11:10->670, 16:10->970, 20:10->1210
+	    final int[] rebootTimes = {10, 310, 670, 970, 1210};
+
+	    // 2. 現在時刻を「分」に換算する
+	    final Calendar cal = Calendar.getInstance();
+	    final int currentTotalMinutes = (cal.get(Calendar.HOUR_OF_DAY) * 60) + cal.get(Calendar.MINUTE);
+	    
+	    // 3. 終了時刻（分換算）
+	    final int endTotalMinutes = currentTotalMinutes + durationMinutes;
+
+	    // 4. 判定ループ
+	    for (final int rebootTime : rebootTimes) {
+	        // 通常のチェック（例: 現在100分 ～ 終了150分 の間に 120分の再起動があるか）
+	        if (currentTotalMinutes < rebootTime && rebootTime <= endTotalMinutes) {
+	            return true;
+	        }
+	        
+	        // 日を跨ぐ場合のチェック（例: 現在1400分(23:20) ～ 終了1460分(0:20) の間に 10分の再起動があるか）
+	        // 再起動時間(10) に 1日分の分(1440) を足して判定する
+	        if (currentTotalMinutes < (rebootTime + 1440) && (rebootTime + 1440) <= endTotalMinutes) {
+	            return true;
+	        }
+	    }
+	    
+	    return false;
 	}
 }

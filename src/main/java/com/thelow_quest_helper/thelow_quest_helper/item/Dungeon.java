@@ -16,7 +16,7 @@ public class Dungeon {
         this.z = z;
     }
 
-    boolean hasCoords() {
+    public boolean hasCoords() {
         return x != null && y != null && z != null;
     }
     
@@ -24,25 +24,26 @@ public class Dungeon {
     	final int x1 = Keyclick.getPlayerBlockPos().getX(), y1 = Keyclick.getPlayerBlockPos().getY(), z1 = Keyclick.getPlayerBlockPos().getZ();
         for (final Dungeon d : dungeons) {
         	
-            if (d.name.replaceAll(" ","").equals(name.replaceAll(" ","").replaceAll("§.", ""))) {
+        	if (name.replaceAll(" ","").replaceAll("§.", "").startsWith(d.name.replaceAll(" ",""))){
             	switch (d.name.replaceAll(" ","")){
             	case "海獣の聖堂":
             	case "タオピピ":
             	case "アイシーメリー":
             	case "サンゴヴェイル":{
-            		TeleportPoint pos = BestTeleport_mtb.findNearestBoatB(x1, y1, z1);
+            		final TeleportPoint pos = BestTeleport_mtb.findNearestBoatB(x1, y1, z1);
             		if(pos==null)return null;
             		final Dungeon returndungeon = new Dungeon("海底村パルジャ("+d.name+")",(double) pos.x,(double) pos.y,(double) pos.z);
             		return returndungeon;
             		}
             	case "海底谷に沈む研究所":{
-            		TeleportPoint pos = BestTeleport_mtb.findNearestBoatB(x1, y1, z1);
+            		final TeleportPoint pos = BestTeleport_mtb.findNearestBoatB(x1, y1, z1);
             		if(pos==null)return null;
             		final Dungeon returndungeon = new Dungeon("海底村マーラン("+d.name+")",(double) pos.x,(double) pos.y,(double) pos.z);
             		return returndungeon;
             		}
             	}
-                return d;
+            	final Dungeon returndungeon = new Dungeon(name,d.x,d.y,d.z);
+                return returndungeon;
             }
         }
         return null; // 該当なし
@@ -63,7 +64,6 @@ public class Dungeon {
     		new Dungeon("サラビサの地下道", 9.0, 116.0, -26.0),
     		new Dungeon("技能の水路", -37.0, 114.0, 24.0),
     		new Dungeon("Forssa", -126.0, 160.0, 164.0),
-    		new Dungeon("Forssa迷いの森", -126.0, 160.0, 164.0),
     		new Dungeon("エルドール鉱山", 118.0, 112.0, -27.0),
     		new Dungeon("スワロー洞窟", -404.0, 136.0, 121.0),
     		new Dungeon("始まりの遺跡", 91.0, 128.0, 191.0),
@@ -124,6 +124,7 @@ public class Dungeon {
     		new Dungeon("Icicle Temple", 1386.0, 142.0, -1125.0),
     		new Dungeon("神父の地下墓地", 1364.0, 84.0, -448.0),
     		new Dungeon("精霊の巣窟", 255.0, 98.0, -161.0),
+    		new Dungeon("深根の殿堂", -313.0,139.0,-15.0),
     		new Dungeon("Spider Cave", 154.0, 86.0, 589.0),
     		new Dungeon("サビャクリ神殿", -1115.0, 73.0, -1163.0),
     		new Dungeon("ソドンの滝", 364.0, 92.0, -662.0),
@@ -179,10 +180,12 @@ public class Dungeon {
     		new Dungeon("アイシーメリー",  null,  null,  null),
     		new Dungeon("Trollga", 61.0, 66.0, -512.0),
     		new Dungeon("ひそかな大木", -1266.0, 67.0, -369.0),
+    		new Dungeon("試験領域：No.25", -369.0,65.0,-967.0),
     		new Dungeon("LavaTree", -1096.0, 75.0, -1112.0),
     		new Dungeon("ベルフォート鉱山", -1070.0, 63.0, 708.0),
     		new Dungeon("クラーゲン海溝", -64.0, 67.0, 880.0),
     		new Dungeon("クリベラ洞窟", -345.0, 92.0, -363.0),
+    		new Dungeon("幽暗の館", -589.0,107.0,-649.0),
     		new Dungeon("クラバスタ", 1220.0, 17.0, -1294.0),
     		new Dungeon("Mycelium cave", 870.0, 22.0, -1283.0),
     		new Dungeon("冥妬の洞窟：鬼哭の遺跡", 1204.0, 101.0, 172.0),
@@ -240,7 +243,6 @@ public class Dungeon {
     		new Dungeon("厄災降臨", 1220.0, 17.0, -1294.0),
     		new Dungeon("零次元の領域:崩", 1464.0, 168.0, -116.0),
     		new Dungeon("旧エルドール採掘場 -特殊採掘区画-", 69.0, 94.0, 8.0),
-    		new Dungeon("旧エルドール採掘場 -特殊採掘区画- ", 69.0, 94.0, 8.0),
     		new Dungeon("零次元の領域:天", 1490.0, 129.0, 210.0),
     		new Dungeon("海底谷に沈む研究所 ",  null,  null,  null),
     		new Dungeon("封絶の輪廻", -1010.0, 63.0, 622.0),
@@ -272,17 +274,8 @@ public class Dungeon {
     		new Dungeon("魔界：ソマの谷", 972.0, 75.0, 214.0),
     		new Dungeon("Last Judgement", -948.0, 178.0, 865.0),
     		new Dungeon("純白の宮殿", 1156.0, 80.0, -932.0),
-    		new Dungeon("純白の宮殿 -Solo-", 1156.0, 80.0, -932.0),
-    		new Dungeon("純白の宮殿 -Ultimate-", 1156.0, 80.0, -932.0),
-    		new Dungeon("純白の宮殿 -Hard-", 1156.0, 80.0, -932.0),
-    		new Dungeon("純白の宮殿 -Easy-", 1156.0, 80.0, -932.0),
     		new Dungeon("純黒の宮殿", 1156.0, 80.0, -932.0),
-    		new Dungeon("サンクチュアリー:風の記憶", thank[0], thank[1], thank[2]),
-    		new Dungeon("サンクチュアリー:水の記憶", thank[0], thank[1], thank[2]),
-    		new Dungeon("サンクチュアリー:大地の記憶", thank[0], thank[1], thank[2]),
-    		new Dungeon("サンクチュアリー:火の記憶", thank[0], thank[1], thank[2]),
-    		new Dungeon("サンクチュアリー:森の記憶", thank[0], thank[1], thank[2]),
-    		new Dungeon("サンクチュアリー：終わりと始まり", thank[0], thank[1], thank[2]),
+    		new Dungeon("サンクチュアリー", thank[0], thank[1], thank[2]),
     		new Dungeon("魔界:醜悪ノ淵叢",  null,  null,  null),
     		new Dungeon("魔界：マクアの深淵", 944.0, 91.0, -500.0),
     		new Dungeon("呪界",  null,  null,  null),

@@ -16,7 +16,7 @@ public class thelow_quest_helperConfig {
     private static final String DEFAULT_CLANQUESTHUDENABLE_TEXT = "クランクエストを開いた時の表示を変えるかどうか";
     private static final String DEFAULT_LONGQUESTENABLE_TEXT = "長いクエストの進行状況を表示するか";
     private static final int DEFAULT_LONGQUESTHUDX = 5;
-    private static final int DEFAULT_LONGQUESTHUDY = 20;
+    private static final int DEFAULT_LONGQUESTHUDY = 5;
     private static final String DEFAULT_LONGQUESTHUDX_TEXT = "クエスト進行状況表示X座標";
     private static final String DEFAULT_LONGQUESTHUDY_TEXT = "クエスト進行状況表示Y座標";
     private static final String DEFAULT_VERSIONCHECK_TEXT = "バージョン情報を自動で確認するかどうか";
@@ -26,8 +26,8 @@ public class thelow_quest_helperConfig {
     public static int ClanQuestHUDY = 20;
     public static boolean ClanQuestHUDenable = true;
     public static boolean LongQuestEnable = true;
-    public static int LongQuestHUDX = 20;
-    public static int LongQuestHUDY = 40;
+    public static int LongQuestHUDX = 5;
+    public static int LongQuestHUDY = 5;
     public static boolean AutoVersionCheck = true;
     public static boolean SendMCID = false;
 

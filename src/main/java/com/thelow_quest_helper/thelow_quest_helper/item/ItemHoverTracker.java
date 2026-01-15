@@ -71,8 +71,8 @@ public class ItemHoverTracker {
                 lastQuestname = display.getString("Name");
                 final String dungeonname = GetClanQuestDungeonName(display);
     			if(dungeonname==null)return;
-    			Dungeon d = Dungeon.getDungeonByName(dungeonname);
-    			if(d==null||d.x==null||d.y==null||d.z==null)return;
+    			final Dungeon d = Dungeon.getDungeonByName(dungeonname);
+    			if(d==null||!d.hasCoords())return;
     			final String info = Town.getNearestTownInfo(d.x, d.y, d.z);
    				tooltip.add(dungeonname+"§e("+d.x+","+d.y+","+d.z+")");
    				final String[] texts = info.split("\\\\n");
@@ -108,9 +108,7 @@ public class ItemHoverTracker {
             			if(!clean.contains("を"))return;
             			final String dungeonName = clean.split("を")[0];
             			final Dungeon d = Dungeon.getDungeonByName(dungeonName);
-                    	if(d==null||d.x==null||d.y==null||d.z==null) {
-                    		return;
-                    	}
+                    	if(d==null||!d.hasCoords())return;
                     	final String info = Town.getNearestTownInfo(d.x, d.y, d.z);
         				if(info==null)return;
         				final String[] texts = info.split("\\\\n");
