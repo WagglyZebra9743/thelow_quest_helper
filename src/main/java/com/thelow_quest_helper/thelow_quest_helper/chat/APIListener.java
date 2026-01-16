@@ -37,6 +37,9 @@ public class APIListener {
     private static int SendVersionTimer = 0;
     
     private static final Minecraft mc = Minecraft.getMinecraft();
+    
+    private static final Pattern DUNGEON_CLEAR_PATTERN = Pattern.compile("§r§a(.*)の攻略時間");
+    private static final Pattern NEWRECORD_PATTERN = Pattern.compile("§r§b[NEW RECORDING] §r§a(.*)§r§aの攻略時間 ");
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onChat(ClientChatReceivedEvent event) {
@@ -105,12 +108,12 @@ public class APIListener {
 
         
         if((colormessage.startsWith("§r§a")||colormessage.startsWith("§r§b[NEW RECORDING] §r§a"))&&message.contains("の攻略時間")) {
-        	final Matcher matcher = Pattern.compile("§r§a(.*)の攻略時間").matcher(colormessage);
+        	final Matcher matcher = DUNGEON_CLEAR_PATTERN.matcher(colormessage);
         	if (matcher.find()) {
                 // (.*) にマッチした部分（キャプチャグループの1番目）がダンジョン名
         		cleardDungeonName = matcher.group(1);
             }else {
-            	final Matcher NewRecordmatcher = Pattern.compile("§r§b[NEW RECORDING] §r§a(.*)§r§aの攻略時間 ").matcher(colormessage);
+            	final Matcher NewRecordmatcher = NEWRECORD_PATTERN.matcher(colormessage);
             	if(NewRecordmatcher.find()) {
             		cleardDungeonName = NewRecordmatcher.group(1);
             	}
@@ -124,9 +127,10 @@ public class APIListener {
     
     @SubscribeEvent
     public void onJoinWorld(EntityJoinWorldEvent event) {
-        if (event.entity == mc.thePlayer&&can_cmd_send) {
-            can_cmd_send=false;
-        }
+    	if(event.entity==null||event.entity != mc.thePlayer)return;
+        if (!can_cmd_send)return;
+        mc.thePlayer.sendChatMessage("/thelow_api location");
+        can_cmd_send=false;
     }
     
     @SubscribeEvent
