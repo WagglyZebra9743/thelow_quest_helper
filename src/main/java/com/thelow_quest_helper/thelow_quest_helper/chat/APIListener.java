@@ -128,7 +128,7 @@ public class APIListener {
     @SubscribeEvent
     public void onJoinWorld(EntityJoinWorldEvent event) {
     	if(event.entity==null||event.entity != mc.thePlayer)return;
-        if (!can_cmd_send)return;
+        if (!can_cmd_send||!version_Checked)return;
         mc.thePlayer.sendChatMessage("/thelow_api location");
         can_cmd_send=false;
     }
