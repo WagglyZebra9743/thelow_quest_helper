@@ -11,6 +11,7 @@ import com.thelow_quest_helper.thelow_quest_helper.chat.APIListener;
 import com.thelow_quest_helper.thelow_quest_helper.clanquest.ClanQuestHUD;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiNewChat;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.BlockPos;
@@ -26,6 +27,8 @@ public class Keyclick {
 	private static boolean mkeyClicked = false;
 	//目的地の名前を別のクラスからも呼べるようにpublic
 	public static String goalname = "";
+	private static final Pattern DUNGEON_PATTERN = Pattern.compile("ダンジョン\\[(.*)\\]を攻略しよう");
+	private static final Pattern COORD_PATTERN = Pattern.compile("\\((-?[0-9.]+), (-?[0-9.]+), (-?[0-9.]+)\\)");
     @SubscribeEvent
     public void onTick(TickEvent.ClientTickEvent event) {
         // GUIが開いていないときは無視
@@ -36,7 +39,8 @@ public class Keyclick {
 
         // Fキーが押されたときの処理
         if(Keyboard.isKeyDown(Keyboard.KEY_F)&&!fkeyClicked) {
-        	if(FKEYProcess())sendchat("§a[thelow_quest_helper]§7このクランクエストにフォーカスしました");
+        	final String FocusDungeon = FKEYProcess();
+        	if(!FocusDungeon.equals("null"))sendchat("§a[thelow_quest_helper]§7"+FocusDungeon+"を攻略にフォーカスしました",-9516);
         	
         //ここからはZキーを押したときの処理
         }else if(Keyboard.isKeyDown(Keyboard.KEY_Z)&&!zkeyClicked) {
@@ -58,7 +62,7 @@ public class Keyclick {
                 //NPCの座標が与えられたとき
                 if(clean.contains("地上世界")) {
                 	//まず座標を(x,y,z)の形式であると仮定して取得するのを試みる
-                	final Matcher matcher = Pattern.compile("\\((-?[0-9.]+), (-?[0-9.]+), (-?[0-9.]+)\\)").matcher(clean);
+                	final Matcher matcher = COORD_PATTERN.matcher(clean);
                 	//見つけた場合座標をそれぞれdouble(実数)として取得する
                     if (matcher.find()) {
                     	final int x = (int) Double.parseDouble(matcher.group(1));
@@ -74,15 +78,15 @@ public class Keyclick {
                         routeInfo = routeCalculator.getBestRoute(x1, y1, z1, x, y, z, APIListener.isClantp);
                         
                         //目的地へのルート案内開始と予定ルートを表示
-                        sendchat("§a[thelow_quest_helper]§f"+goalname+"§7へのルート案内を開始します");
-                        sendchat("§e予定ルート:§a現在地" + routeInfo[3]);
-                        sendchat("");
+                        sendchat("§a[thelow_quest_helper]§f"+goalname+"§7へのルート案内を開始します",-7460);
+                        sendchat("§e予定ルート:§a現在地" + routeInfo[3],-7461);
+                        sendchat("",-7462);
                         
                         //最初の経由地がクランハウスだけか、ガチャ広場経由か、直接かによって分岐するメッセージ
                         if(routeInfo[3].contains("clan")) {
-                        	sendchat("§a[thelow_quest_helper]§bクランtp§7をし"+(routeInfo[3].contains("ガチャ") ? "た後§bガチャ広場§7を経由して§aハルシオン§7に向かってください" : "て"+ (routeInfo[3].contains("メルトリア王国 (馬車)") ? "§a馬車乗り場§7に向かってください" : routeInfo[3].contains("メルトリア王国 (飛空艇)") ? "§a飛空艇発着場§7に向かってください" : "§f"+goalname+"§7に向かってください")));
+                        	sendchat("§a[thelow_quest_helper]§bクランtp§7をし"+(routeInfo[3].contains("ガチャ") ? "た後§bガチャ広場§7を経由して§aハルシオン§7に向かってください" : "て"+ (routeInfo[3].contains("メルトリア王国 (馬車)") ? "§a馬車乗り場§7に向かってください" : routeInfo[3].contains("メルトリア王国 (飛空艇)") ? "§a飛空艇発着場§7に向かってください" : "§f"+goalname+"§7に向かってください")),-7463);
                         }else {
-                        	sendchat("§a[thelow_quest_helper]§e"+MarkerRenderer.getMarkername()+"に向かってください");
+                        	sendchat("§a[thelow_quest_helper]§e"+MarkerRenderer.getMarkername()+"に向かってください",-7463);
                         }
                         
                         //キーを押した判定を取り説明文路リセットしておく(ループ防止)
@@ -98,7 +102,7 @@ public class Keyclick {
                 	//ダンジョン名からダンジョン情報を取得する
                 	final Dungeon d = Dungeon.getDungeonByName(dungeonName);
                 	//ダンジョン名が見つからないか座標が与えられていなければ次の行へ移行
-    				if(d==null||d.x==null||d.y==null||d.z==null)continue;
+    				if(d==null||!d.hasCoords())continue;
     				
     				//目的地に接近したときのメッセージを出すために保存
     				goalname=d.name;
@@ -108,15 +112,15 @@ public class Keyclick {
     				routeInfo = routeCalculator.getBestRoute(x1, y1, z1, (int)Math.round(d.x), (int)Math.round(d.y), (int)Math.round(d.z), APIListener.isClantp);
 
     				//目的地へのルート案内開始と予定ルートを表示
-    				sendchat("§a[thelow_quest_helper]§f"+goalname+"§7へのルート案内を開始します");
-    				sendchat("§e予定ルート:§a現在地" + routeInfo[3]);
-    				sendchat("");
+    				sendchat("§a[thelow_quest_helper]§f"+goalname+"§7へのルート案内を開始します",-7460);
+    				sendchat("§e予定ルート:§a現在地" + routeInfo[3],-7461);
+    				sendchat("",-7462);
                     
                     //最初の経由地がクランハウスだけか、ガチャ広場経由か、直接かによって分岐するメッセージ
                     if(routeInfo[3].contains("clan")) {
-                    	sendchat("§a[thelow_quest_helper]§bクランtp§7をし"+(routeInfo[3].contains("ガチャ") ? "た後§bガチャ広場§7を経由して§aハルシオン§7に向かってください" : "て"+ (routeInfo[3].contains("メルトリア王国 (馬車)") ? "§a馬車乗り場§7に向かってください" : routeInfo[3].contains("メルトリア王国 (飛空艇)") ? "§a飛空艇発着場§7に向かってください" : "§f"+goalname+"§7に向かってください")));
+                    	sendchat("§a[thelow_quest_helper]§bクランtp§7をし"+(routeInfo[3].contains("ガチャ") ? "た後§bガチャ広場§7を経由して§aハルシオン§7に向かってください" : "て"+ (routeInfo[3].contains("メルトリア王国 (馬車)") ? "§a馬車乗り場§7に向かってください" : routeInfo[3].contains("メルトリア王国 (飛空艇)") ? "§a飛空艇発着場§7に向かってください" : "§f"+goalname+"§7に向かってください")),-7463);
                     }else {
-                    	sendchat("§a[thelow_quest_helper]§e"+MarkerRenderer.getMarkername()+"§aに向かってください");
+                    	sendchat("§a[thelow_quest_helper]§e"+MarkerRenderer.getMarkername()+"§aに向かってください",-7463);
                     }
                     
                     //キーを押した判定を取り説明文をリセットしておく(ループ防止)
@@ -133,7 +137,7 @@ public class Keyclick {
                 	//ダンジョン名からダンジョン情報を取得する
                 	final Dungeon d = Dungeon.getDungeonByName(dungeonName);
                 	//ダンジョンが見つからないか、座標が与えられていないならば次の行へ移行
-                	if(d==null||d.x==null||d.y==null||d.z==null)continue;
+                	if(d==null||!d.hasCoords())continue;
     				
                 	//目的地に接近したときのメッセージを出すために保存
                 	goalname=d.name;
@@ -143,15 +147,15 @@ public class Keyclick {
     				routeInfo = routeCalculator.getBestRoute(x1, y1, z1, (int)Math.round(d.x), (int)Math.round(d.y), (int)Math.round(d.z), APIListener.isClantp);
     				
     				//目的地へのルート案内開始と予定ルートを表示
-    				sendchat("§a[thelow_quest_helper]§f"+goalname+"§7へのルート案内を開始します");
-    				sendchat("§e予定ルート:§a現在地" + routeInfo[3]);
-    				sendchat("");
+    				sendchat("§a[thelow_quest_helper]§f"+goalname+"§7へのルート案内を開始します",-7460);
+    				sendchat("§e予定ルート:§a現在地" + routeInfo[3],-7461);
+    				sendchat("",-7462);
                     
                     //最初の経由地がクランハウスだけか、ガチャ広場経由か、直接かによって分岐するメッセージ
                     if(routeInfo[3].contains("clan")) {
-                    	sendchat("§a[thelow_quest_helper]§bクランtp§7をし"+(routeInfo[3].contains("ガチャ") ? "た後§bガチャ広場§7を経由して§aハルシオン§7に向かってください" : "て"+ (routeInfo[3].contains("メルトリア王国 (馬車)") ? "§a馬車乗り場§7に向かってください" : routeInfo[3].contains("メルトリア王国 (飛空艇)") ? "§a飛空艇発着場§7に向かってください" : "§f"+goalname+"§7に向かってください")));
+                    	sendchat("§a[thelow_quest_helper]§bクランtp§7をし"+(routeInfo[3].contains("ガチャ") ? "た後§bガチャ広場§7を経由して§aハルシオン§7に向かってください" : "て"+ (routeInfo[3].contains("メルトリア王国 (馬車)") ? "§a馬車乗り場§7に向かってください" : routeInfo[3].contains("メルトリア王国 (飛空艇)") ? "§a飛空艇発着場§7に向かってください" : "§f"+goalname+"§7に向かってください")),-7463);
                     }else {
-                    	sendchat("§a[thelow_quest_helper]§e"+MarkerRenderer.getMarkername()+"§aに向かってください");
+                    	sendchat("§a[thelow_quest_helper]§e"+MarkerRenderer.getMarkername()+"§aに向かってください",-7463);
                     }
                     
                     //キーを押した判定を取り説明文をリセットしておく(ループ防止)
@@ -173,7 +177,7 @@ public class Keyclick {
                 //NPCの座標が与えられたとき
                 if(clean.contains("地上世界")) {
                 	//まず座標を(x,y,z)の形式であると仮定して取得するのを試みる
-                	final Matcher matcher = Pattern.compile("\\((-?[0-9.]+), (-?[0-9.]+), (-?[0-9.]+)\\)").matcher(clean);
+                	final Matcher matcher = COORD_PATTERN.matcher(clean);
                 	//見つけた場合座標をそれぞれdouble(実数)として取得する
                     if (matcher.find()) {
                     	final int x = (int) Double.parseDouble(matcher.group(1));
@@ -186,7 +190,7 @@ public class Keyclick {
                     	LongQuestMarker.RemoveMarkerByID("destination");
                     	LongQuestMarker.addSubMarker(x, y, z, NPCname, "destination");
                         //目的地へのルート案内開始と予定ルートを表示
-                        sendchat("§a[thelow_quest_helper]§f"+NPCname+"§7にマーカーを設置しました");
+                        sendchat("§a[thelow_quest_helper]§f"+NPCname+"§7にマーカーを設置しました",-4132);
                         
                         
                         //キーを押した判定を取り説明文路リセットしておく(ループ防止)
@@ -202,12 +206,12 @@ public class Keyclick {
                 	//ダンジョン名からダンジョン情報を取得する
                 	final Dungeon d = Dungeon.getDungeonByName(dungeonName);
                 	//ダンジョン名が見つからないか座標が与えられていなければ次の行へ移行
-    				if(d==null||d.x==null||d.y==null||d.z==null)continue;
+    				if(d==null||!d.hasCoords())continue;
     				LongQuestMarker.RemoveMarkerByID("destination");
                 	LongQuestMarker.addSubMarker(d.x, d.y, d.z, d.name, "destination");
     				
     				//目的地へのルート案内開始と予定ルートを表示
-    				sendchat("§a[thelow_quest_helper]§f"+d.name+"§7にマーカーを設置しました");
+    				sendchat("§a[thelow_quest_helper]§f"+d.name+"§7にマーカーを設置しました",-4132);
                     
                     
                     //キーを押した判定を取り説明文をリセットしておく(ループ防止)
@@ -224,11 +228,11 @@ public class Keyclick {
                 	//ダンジョン名からダンジョン情報を取得する
                 	final Dungeon d = Dungeon.getDungeonByName(dungeonName);
                 	//ダンジョンが見つからないか、座標が与えられていないならば次の行へ移行
-                	if(d==null||d.x==null||d.y==null||d.z==null)continue;
+                	if(d==null||!d.hasCoords())continue;
                 	LongQuestMarker.RemoveMarkerByID("destination");
                 	LongQuestMarker.addSubMarker(d.x, d.y, d.z, d.name, "destination");
     				//目的地へのルート案内開始と予定ルートを表示
-    				sendchat("§a[thelow_quest_helper]§f"+d.name+"§7にマーカーを設置しました");
+    				sendchat("§a[thelow_quest_helper]§f"+d.name+"§7にマーカーを設置しました",-4132);
                     
                     //キーを押した判定を取り説明文をリセットしておく(ループ防止)
     				mkeyClicked = true;
@@ -253,14 +257,17 @@ public class Keyclick {
         return null;
     }
     
-    private void sendchat(final String text) {
-    	Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentText(text));
+    private void sendchat(final String text,final int num) {
+    	final GuiNewChat chat = mc.ingameGUI.getChatGUI();
+		if (chat != null) {
+		    chat.printChatMessageWithOptionalDeletion(new ChatComponentText(text), num);//数字を適当に書いてID被りを避けてくれ
+		}
     }
     
     private static String GetClanQuestDungeonName(String DungeonNameText) {
     	if(DungeonNameText==null||!DungeonNameText.contains("ダンジョン[")||!DungeonNameText.contains("]を攻略しよう"))return null;
     	final String dungeonnametext = DungeonNameText;
-    	final Matcher matcher = Pattern.compile("ダンジョン\\[(.*)\\]を攻略しよう").matcher(dungeonnametext);
+    	final Matcher matcher = DUNGEON_PATTERN.matcher(dungeonnametext);
     	if (matcher.find()) {
             // (.*) にマッチした部分（キャプチャグループの1番目）を返す
             return matcher.group(1).trim();
@@ -269,10 +276,10 @@ public class Keyclick {
     	return dungeonname;
     }
     
-    private static boolean FKEYProcess() {
+    private static String FKEYProcess() {
     	//loreを取得する
     	final List<String> lastLore = ItemHoverTracker.lastLore;
-        if (lastLore == null) return false;
+        if (lastLore == null) return "null";
 
         for (final String line : lastLore) {
         	//loreを一行ずつ取得してカラーコードを除去して空白を削除する
@@ -289,9 +296,9 @@ public class Keyclick {
 				//キーを押した判定を取り説明文をリセットしておく(ループ防止)
 				fkeyClicked = true;
 				ItemHoverTracker.lastLore = null;
-				return true;//処理が完了したのでloreの取得をやめる
+				return dungeonName;//処理が完了したのでloreの取得をやめる
             }
         }
-        return false;//ここまで来たらヒットしなかったということ
+        return "null";//ここまで来たらヒットしなかったということ
     }
 }

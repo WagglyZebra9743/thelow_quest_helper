@@ -21,6 +21,10 @@ public class ItemHoverTracker {
 	public static String lastNPCname = null;
 	public static List<String> lastLore;
 	
+	private static final Pattern PAPER_TIME_PATTERN = Pattern.compile("残り時間:([0-9]+)分");
+	public static final Pattern WOOL_TIME_PATTERN = Pattern.compile("有効期限:([0-9]+)分");
+	private static final Pattern CLAN_QUEST_PATTERN = Pattern.compile("§a(.*)を攻略する");
+	private static final Pattern COORD_PATTERN = Pattern.compile(".*\\((-?[0-9.]+),\\s*(-?[0-9.]+),\\s*(-?[0-9.]+)\\)");
     @SubscribeEvent
     public void onItemTooltip(ItemTooltipEvent event) {
     	final ItemStack stack = event.itemStack;
@@ -46,7 +50,7 @@ public class ItemHoverTracker {
              
             //紙だったらCTのクエストかをloreで確認して表示する
             if(id.equals("minecraft:paper")) {
-            	final int timem = getTime(lore,"このクエストは一定時間後に再度受けられます。残り時間:","残り時間:([0-9]+)分");
+            	final int timem = getTime(lore,"このクエストは一定時間後に再度受けられます。残り時間:",PAPER_TIME_PATTERN);
             	if(timem==-1)return;
             	final String text = time_creater.operation(timem);
                 if(text==null||text.isEmpty())return;
@@ -59,7 +63,7 @@ public class ItemHoverTracker {
             
             //羊毛だったらクランクエストかをloreで確認して表示する
             if(id.equals("minecraft:wool")){
-            	final int timem = getTime(lore,"有効期限:","有効期限:([0-9]+)分");
+            	final int timem = getTime(lore,"有効期限:",WOOL_TIME_PATTERN);
             	if(timem==-1)return;
             	final String text = time_creater.operation(timem);
             	if(text==null||text.isEmpty())return;
@@ -71,8 +75,8 @@ public class ItemHoverTracker {
                 lastQuestname = display.getString("Name");
                 final String dungeonname = GetClanQuestDungeonName(display);
     			if(dungeonname==null)return;
-    			Dungeon d = Dungeon.getDungeonByName(dungeonname);
-    			if(d==null||d.x==null||d.y==null||d.z==null)return;
+    			final Dungeon d = Dungeon.getDungeonByName(dungeonname);
+    			if(d==null||!d.hasCoords())return;
     			final String info = Town.getNearestTownInfo(d.x, d.y, d.z);
    				tooltip.add(dungeonname+"§e("+d.x+","+d.y+","+d.z+")");
    				final String[] texts = info.split("\\\\n");
@@ -93,7 +97,7 @@ public class ItemHoverTracker {
             		final String clean = line.replaceAll("§.", "").trim();
             		if(clean.contains("地上世界")) {
             			// 緩い正規表現で数字3つを拾う
-            			final Matcher matcher = Pattern.compile(".*\\((-?[0-9.]+),\\s*(-?[0-9.]+),\\s*(-?[0-9.]+)\\)").matcher(clean);
+            			final Matcher matcher = COORD_PATTERN.matcher(clean);
                 		if (matcher.find()) {
                 			if(display.hasKey("Name")) {
                 				lastQuestname = display.getString("Name");
@@ -108,9 +112,7 @@ public class ItemHoverTracker {
             			if(!clean.contains("を"))return;
             			final String dungeonName = clean.split("を")[0];
             			final Dungeon d = Dungeon.getDungeonByName(dungeonName);
-                    	if(d==null||d.x==null||d.y==null||d.z==null) {
-                    		return;
-                    	}
+                    	if(d==null||!d.hasCoords())return;
                     	final String info = Town.getNearestTownInfo(d.x, d.y, d.z);
         				if(info==null)return;
         				final String[] texts = info.split("\\\\n");
@@ -126,7 +128,7 @@ public class ItemHoverTracker {
         }
     }
     
-    public static int getTime(List<String> lore, String startText, String regex) {
+    public static int getTime(List<String> lore, String startText, Pattern thePattern) {
         String loreline = "";
 
         // loreから対象の行を探す
@@ -152,7 +154,7 @@ public class ItemHoverTracker {
         loreline = loreline.replaceAll("§[0-9a-fk-or]", "");
 
         // 正規表現で時間を抽出
-        final Matcher matcher = Pattern.compile(regex).matcher(loreline);
+        final Matcher matcher = thePattern.matcher(loreline);
         if (matcher.find()) {
             return Integer.parseInt(matcher.group(1));
         }
@@ -162,7 +164,7 @@ public class ItemHoverTracker {
     public static String GetClanQuestDungeonName(final NBTTagCompound display) {
     	if(display==null||!display.hasKey("Name")||!display.getString("Name").contains("を攻略する"))return null;
     	final String itemname = display.getString("Name");
-    	final Matcher matcher = Pattern.compile("§a(.*)を攻略する").matcher(itemname);
+    	final Matcher matcher = CLAN_QUEST_PATTERN.matcher(itemname);
     	if (matcher.find()) {
             // (.*) にマッチした部分（キャプチャグループの1番目）を返す
             return matcher.group(1).replace("§l", "").trim();
