@@ -148,7 +148,6 @@ public class APIListener {
         	TickTimer = 0;
             if (player != null) {
             	//コマンド送信
-            	System.out.println("player");
                 mc.thePlayer.sendChatMessage("/thelow_api player");
             }
         }

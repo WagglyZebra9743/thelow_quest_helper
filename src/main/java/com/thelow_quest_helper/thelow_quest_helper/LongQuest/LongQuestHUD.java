@@ -119,41 +119,45 @@ public class LongQuestHUD {
         
         FontRenderer font = mc.fontRendererObj;
 
+        // 【重要】ループを抜けた後に描画するためのリスト
+        List<String> pendingTooltip = null;
+
         for(final LongQuest TheLongQuest : LongQuestList) {
         	if(!CheckTheListHasTrue(TheLongQuest))continue;
         	
-        	// 1. クエスト名を描画
         	final String nameText = TheLongQuest.QuestName + ":";
-            // クエスト名にはツールチップなし(null)で描画
-            HUD_render(nameText, HUD_X, HUD_Y, null);
+            // 名前部分の描画（マウス判定だけ行って、ホバーしてたら何かするならここ）
+            if(HUD_render_check(nameText, HUD_X, HUD_Y)) {
+                // 名前部分にツールチップを出したい場合はここに処理を書く
+            }
 
-            // 2. ■□ を1つずつ描画していく
-            // 現在の描画X座標 (クエスト名の後ろからスタート)
             int currentDrawX = HUD_X + font.getStringWidth(nameText);
             
             for (int i = 0; i < TheLongQuest.QuestPhase.length; i++) {
                 boolean isClear = TheLongQuest.QuestPhase[i];
-                
-                // 表示する文字 (■ または □)
                 String symbol = isClear ? "§a■" : "§f□";
                 
-                // ツールチップの準備
-                List<String> tipLines = new ArrayList<>();
-                if (TheLongQuest.QuestList != null && i < TheLongQuest.QuestList.length) {
-                    String desc = TheLongQuest.QuestList[i].Description;
-                    if (desc != null) {
-                        tipLines.add(desc);
+                // 1文字描画し、マウスが乗っているかチェック
+                if (HUD_render_check(symbol, currentDrawX, HUD_Y)) {
+                    // マウスが乗っていたら、表示すべきテキストを pendingTooltip に保存
+                     if (TheLongQuest.QuestList != null && i < TheLongQuest.QuestList.length) {
+                        String desc = TheLongQuest.QuestList[i].Description;
+                        if (desc != null) {
+                            pendingTooltip = new ArrayList<>();
+                            pendingTooltip.add(desc);
+                        }
                     }
                 }
-
-                // 1文字(1ブロック)だけ描画
-                HUD_render(symbol, currentDrawX, HUD_Y, tipLines);
                 
-                // 次の文字のためにX座標を進める
                 currentDrawX += font.getStringWidth(symbol);
             }
 
             HUD_Y += 13;
+        }
+        
+        // 【重要】全ての文字を描画し終わった後、一番手前にツールチップを描画する
+        if (pendingTooltip != null && !pendingTooltip.isEmpty()) {
+            DrawTooltip(pendingTooltip);
         }
     }
 
@@ -165,49 +169,52 @@ public class LongQuestHUD {
         return false;
     }
 
-    // ★大幅にシンプル化: 「1つの文字列ブロック」と「それに対応する1つのツールチップ」を受け取る形に変更
-    private static void HUD_render(final String text, final int x, final int y, final List<String> tooltip) {
-        if (text == null) return;
+    // 描画を行い、マウスが上にあるかどうか(true/false)だけを返すメソッド
+    private static boolean HUD_render_check(final String text, final int x, final int y) {
+        if (text == null) return false;
         FontRenderer font = mc.fontRendererObj;
         
         final int totalWidth = font.getStringWidth(text);
         final int textHeight = font.FONT_HEIGHT;
-        final int padding = 2; // 少しパディングを減らしてもいいかもしれません(四角形が連続するので)
+        final int padding = 2; 
 
-        // 背景描画 (ここでの重なりは許容するか、drawRectのX座標を調整して隣と繋げる)
-        // 隣り合う背景を綺麗につなげるため、右側の padding を調整
-        // x - padding から x + totalWidth + padding まで描画すると、隣の文字と重なる可能性がありますが、
-        // 半透明黒背景(0x50000000)同士の重なりは色が濃くなるだけなので、
-        // 見た目を気にするなら padding を 0 にするか、まとめて描画する必要があります。
-        // 今回は「一つずつ確実に処理する」優先なので、標準的な描画を行います。
         Gui.drawRect(x, y - padding, x + totalWidth, y + textHeight + padding, 0x50000000);
 
         GlStateManager.pushMatrix();
-        font.drawString(text, x, y, 0xFFFFFF); // 影なし
+        font.drawString(text, x, y, 0xFFFFFF);
         GlStateManager.popMatrix();
-
-        if (!(mc.currentScreen instanceof GuiChat) || tooltip == null || tooltip.isEmpty()) return;
         
+        if (!(mc.currentScreen instanceof GuiChat)) return false;
+
         final ScaledResolution sr = new ScaledResolution(mc);
         final int mouseX = Mouse.getX() * sr.getScaledWidth() / mc.displayWidth;
         final int mouseY = sr.getScaledHeight() - Mouse.getY() * sr.getScaledHeight() / mc.displayHeight - 1;
 
-        // マウス判定 (描画した矩形の中にマウスがあるか)
-        if (mouseX >= x && mouseX < x + totalWidth &&
-            mouseY >= y - padding && mouseY < y + textHeight + padding) {
-            
-            GlStateManager.pushMatrix();
-            RenderHelper.disableStandardItemLighting();
-            
-            GuiUtils.drawHoveringText(tooltip, mouseX, mouseY, sr.getScaledWidth(), sr.getScaledHeight(), -1, font);
-            
-            GlStateManager.popMatrix();
-            
-            RenderHelper.disableStandardItemLighting();
-            GlStateManager.disableRescaleNormal();
-            GlStateManager.disableLighting();
-            GlStateManager.disableDepth();
-            GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-        }
+        return (mouseX >= x && mouseX < x + totalWidth &&
+                mouseY >= y - padding && mouseY < y + textHeight + padding);
+    }
+    
+    // ツールチップ描画専用メソッド
+    private static void DrawTooltip(List<String> tooltip) {
+    	if (tooltip == null || tooltip.isEmpty()) return;
+        
+        FontRenderer font = mc.fontRendererObj;
+    	final ScaledResolution sr = new ScaledResolution(mc);
+        final int mouseX = Mouse.getX() * sr.getScaledWidth() / mc.displayWidth;
+        final int mouseY = sr.getScaledHeight() - Mouse.getY() * sr.getScaledHeight() / mc.displayHeight - 1;
+
+        GlStateManager.pushMatrix();
+        RenderHelper.disableStandardItemLighting(); 
+        
+        // ここで描画
+        GuiUtils.drawHoveringText(tooltip, mouseX, mouseY, sr.getScaledWidth(), sr.getScaledHeight(), -1, font);
+        
+        GlStateManager.popMatrix();
+        
+        RenderHelper.disableStandardItemLighting();
+        GlStateManager.disableRescaleNormal();
+        GlStateManager.disableLighting();
+        GlStateManager.disableDepth();
+        GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
     }
 }
