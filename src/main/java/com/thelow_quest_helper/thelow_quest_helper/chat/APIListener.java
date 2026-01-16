@@ -53,50 +53,47 @@ public class APIListener {
         
         if (msg.startsWith("$api")) {
             String[] split = msg.split(" ", 2);
-            if (split.length == 2) {
-                try {
-                	final JsonObject json = new JsonParser().parse(split[1]).getAsJsonObject();
-                	if(!json.has("apiType")||!json.has("response"))return;
-                	final String apiType = json.get("apiType").getAsString();
-                    if("location".equals(apiType)) {
-                    	final JsonObject response = json.getAsJsonObject("response");
-                    	if(!response.has("worldName"))return;
-                    	final String worldName = response.get("worldName").getAsString();
-                        if(worldName.equals("thelow")) {
-                        	MarkerRenderer.marker_enable = true;
+            if (split.length != 2)return;
+            try {
+                final JsonObject json = new JsonParser().parse(split[1]).getAsJsonObject();
+                if(!json.has("apiType")||!json.has("response"))return;
+                final String apiType = json.get("apiType").getAsString();
+                if("location".equals(apiType)) {
+                    final JsonObject response = json.getAsJsonObject("response");
+                    if(!response.has("worldName"))return;
+                    final String worldName = response.get("worldName").getAsString();
+                    if(worldName.equals("thelow")) {
+                        MarkerRenderer.marker_enable = true;
+                    }else {
+                        MarkerRenderer.marker_enable = false;
+                    }
+                }
+                if("player_status".equals(apiType)) {
+                    final JsonObject response = json.getAsJsonObject("response");
+                    if(!response.has("mcid"))return;
+                    final String mcid = response.get("mcid").getAsString();
+                    final String my_mcid = mc.thePlayer.getName();
+                    if(mcid.equals(my_mcid)) {
+                        if(!response.has("clanInfo")) {
+                        	isClantp=false;
+                        	return;
+                        }
+                        final JsonObject clanInfo = response.get("clanInfo").getAsJsonObject();
+                        if(!clanInfo.has("clanRank")) {
+                        	isClantp = false;
+                        	return;
+                        }
+                        final String clanRank = clanInfo.get("clanRank").getAsString();
+                        if("UNRANKED".equals(clanRank)||clanRank.startsWith("IRON")||clanRank.startsWith("GOLD")||clanRank.startsWith("LAPIS")||clanRank.startsWith("EMERALD")||clanRank.startsWith("REDSTONE")||clanRank.startsWith("DIAMOND")) {
+                        	isClantp = false;
                         }else {
-                        	MarkerRenderer.marker_enable = false;
+                        	isClantp = true;
                         }
                     }
-                    if("player_status".equals(apiType)) {
-                    	final JsonObject response = json.getAsJsonObject("response");
-                    	if(!response.has("mcid"))return;
-                    	final String mcid = response.get("mcid").getAsString();
-                    	final String my_mcid = mc.thePlayer.getName();
-                        if(mcid.equals(my_mcid)) {
-                        	if(!response.has("clanInfo")) {
-                        		isClantp=false;
-                        		return;
-                        	}
-                        	final JsonObject clanInfo = response.get("clanInfo").getAsJsonObject();
-                        	if(!clanInfo.has("clanRank")) {
-                        		isClantp = false;
-                        		return;
-                        	}
-                        	final String clanRank = clanInfo.get("clanRank").getAsString();
-                        	if("UNRANKED".equals(clanRank)||"IRON".startsWith(clanRank)||"GOLD".startsWith(clanRank)||"LAPIS".startsWith(clanRank)||"EMERALD".startsWith(clanRank)||"REDSTONE".startsWith(clanRank)||"DIAMOND".startsWith(clanRank)) {
-                        		isClantp = false;
-                        	}else {
-                        		isClantp = true;
-                        	}
-                        }
-                    }
-                    
                 }
-                    
-                 catch (Exception e) {
-                    mc.thePlayer.addChatMessage(new ChatComponentText("§a[thelow_quest_helper]§c 解析失敗: " + e.getMessage()));
-                }
+            }
+             catch (Exception e) {
+                mc.thePlayer.addChatMessage(new ChatComponentText("§a[thelow_quest_helper]§c 解析失敗: " + e.getMessage()));
             }
         }
     }
@@ -128,7 +125,6 @@ public class APIListener {
     @SubscribeEvent
     public void onJoinWorld(EntityJoinWorldEvent event) {
         if (event.entity == mc.thePlayer&&can_cmd_send) {
-            mc.thePlayer.sendChatMessage("/thelow_api location");
             can_cmd_send=false;
         }
     }

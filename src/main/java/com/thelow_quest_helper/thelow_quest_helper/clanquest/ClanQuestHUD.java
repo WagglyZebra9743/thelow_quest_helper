@@ -135,7 +135,7 @@ public class ClanQuestHUD {
 	            final Dungeon dungeoninfo = Dungeon.getDungeonByName(dungeonname);
 	            
 	            //時間を取得する
-	            final int timem = ItemHoverTracker.getTime(lore,"有効期限:","有効期限:([0-9]+)分");
+	            final int timem = ItemHoverTracker.getTime(lore,"有効期限:",ItemHoverTracker.WOOL_TIME_PATTERN);
 	            if(timem==-1)continue;//上で呼び出したメソッドはデータがないとnullではなく-1を返す
 	            
 	            //クランクエストであることが確定する
@@ -267,11 +267,12 @@ public class ClanQuestHUD {
     		theQuest.Queststats = "§e未完了§r";
     	}
     	
-    	font.drawStringWithShadow(String.format("%6d分", theQuest.TimeLimitMinutes), limitpos+4, HUDposY, 0xFFFFFF);
-        
-        //終了予定時刻を表示
     	String RebootColor = "";
     	if(theQuest.Reboot)RebootColor = "§c";
+    	
+    	font.drawStringWithShadow(RebootColor+String.format("%6d分", theQuest.TimeLimitMinutes), limitpos+4, HUDposY, 0xFFFFFF);
+        
+        //終了予定時刻を表示
     	font.drawStringWithShadow(RebootColor+"("+formatter.format(theQuest.limitTime)+")", timepos+16, HUDposY, 0xFFFFFF);
         
         //クエストが終了しているかを表示
