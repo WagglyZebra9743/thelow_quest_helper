@@ -140,6 +140,8 @@ public class ClanQuestHUD {
 	            
 	            //クランクエストであることが確定する
 	            ClanQuestIndex++;//格納場所を調整する
+	            //最初にリセットをかける
+	            ClanQuestInfo.slots[ClanQuestIndex] = new ClanQuest();
 	            if(dungeoninfo != null) {//ダンジョン情報があるなら格納する
 	                ClanQuestInfo.slots[ClanQuestIndex].QuestsDungeon = dungeoninfo;
 	            }else {//検索でヒットしなかったらnullで置換する
@@ -157,8 +159,8 @@ public class ClanQuestHUD {
 	            ClanQuestInfo.slots[ClanQuestIndex].TimeLimitMinutes = timem;
 	            ClanQuestInfo.slots[ClanQuestIndex].limitTime  = endTime;
 	            ClanQuestInfo.slots[ClanQuestIndex].Queststats  = QuestStats;
-	          //再起動を挟むかを確認
-	            if(ClossRebootTime(timem))ClanQuestInfo.slots[ClanQuestIndex].Reboot = true;
+	            //再起動を挟むかを確認
+	            ClanQuestInfo.slots[ClanQuestIndex].Reboot = ClossRebootTime(timem);
 	            ClanQuestInfoGetTime = System.currentTimeMillis();//取得時間を変更する
 	    	}
 	        //何回も動かないようにする
